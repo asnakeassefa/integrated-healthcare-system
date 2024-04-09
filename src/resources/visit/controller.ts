@@ -6,7 +6,7 @@ import Visit from './model';
 const createVisitHistory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // Extract data from the request body
-    const { visitId, userId, staffId, visitDate, appointmentDate } = req.body;
+    const {userId, staffId, visitDate, appointmentDate } = req.body;
 
     // Fetch the user and staff records from the database
     const user = await User.findById(userId);
@@ -19,7 +19,6 @@ const createVisitHistory = async (req: Request, res: Response, next: NextFunctio
 
     // Create a new Visit instance
     const newVisit = new Visit({
-      visitId,
       user,
       staff,
       visitDate,
@@ -49,7 +48,7 @@ const getAllVisitHistory = async (req: Request, res: Response, next: NextFunctio
 }
 
 // get visit history for a user
-const getVisitHistoryForUser = async (req: Request, res: Response, next: NextFunction) => {
+const getVisitHistoryByUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId);
@@ -65,7 +64,7 @@ const getVisitHistoryForUser = async (req: Request, res: Response, next: NextFun
 }
 // get visit history for a staff
 
-const getVisitHistoryForStaff = async (req: Request, res: Response, next: NextFunction) => {
+const getVisitHistoryByStaff = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { staffId } = req.params;
     const staff = await Staff.findById(staffId);
@@ -82,7 +81,7 @@ const getVisitHistoryForStaff = async (req: Request, res: Response, next: NextFu
 
 
 // get the past visits from a specific date
-const getPastVisits = async (req: Request, res: Response, next: NextFunction) => {
+const getVisitHistoryByDate = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { date } = req.params;
     const visits = await Visit.find({ visitDate: { $lt: date } });
@@ -109,8 +108,8 @@ const getVisitHistoryByAppointmentDate = async (req: Request, res: Response, nex
 export default {
   createVisitHistory,
   getAllVisitHistory,
-  getVisitHistoryForUser,
-  getVisitHistoryForStaff,
-  getPastVisits,
+  getVisitHistoryByUser,
+  getVisitHistoryByStaff,
+  getVisitHistoryByDate,
   getVisitHistoryByAppointmentDate
 }

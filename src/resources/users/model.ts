@@ -3,10 +3,6 @@ import UserInterface from './interface'
 
 // Define the User Schema
 const UserSchema = new Schema({
-  userId:{
-    type:String,
-    required:true,
-  },
   name: {
     type: String,
     required: true,

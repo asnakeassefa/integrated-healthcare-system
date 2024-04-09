@@ -1,21 +1,18 @@
-import mongoose, { Schema } from 'mongoose'
-import User from '../users/model'
+import mongoose, {Schema } from 'mongoose'
 import Staff from '../staff/model'
 import VisitInterface from './interface'
 
 
 // Define the Staff Schema
 const VisitSchema = new Schema({
-  visitId: {
-    type:String,
+  user:{
+    type:Schema.Types.ObjectId,
+    ref:'User',
     required:true,
   },
-  user:{
-    type:User,
-    require:true,
-  },
   staff:{
-    type:Staff,
+    type:Schema.Types.ObjectId,
+    ref:'Staff',
     required:true,
   },
   visitDate:{

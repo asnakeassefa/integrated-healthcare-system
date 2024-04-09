@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import userController from './controller'
-
+import staffController from './controller'
 const router = Router()
 
+
 // define routes
-router.route('/').get(userController.getAllStaff)
-router.route('/:id').get(userController.getStaffById)
+router.route('/createStaff').post(staffController.createStaff)
+router.route('/getAllStaff').get(staffController.getAll)
 
 export default router
