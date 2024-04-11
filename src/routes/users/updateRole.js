@@ -9,7 +9,7 @@ function updateUser(req,res,next){
     const newrole = req.body.newrole;
    
 
-    user.findOneAndUpdate({ userName:username},{ role:newrole}, function(user, err) {
+    user.findOneAndUpdate({ userName:username},{ role:newrole}).then(function(user, err) {
         if (err ) {
              res.sendStatus(401);
         }

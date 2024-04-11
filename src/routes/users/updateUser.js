@@ -12,7 +12,7 @@ function updateUser(req,res,next){
     const newemail = req.body.newemail;
 
 
-    user.findOneAndUpdate({ userName:username,password:pass},{ userName:newusername,password:newpassword,email:newemail}, function(user, err) {
+    user.findOneAndUpdate({ userName:username,password:pass},{ userName:newusername,password:newpassword,email:newemail}).then( function(user, err) {
         if (err ) {
              res.sendStatus(401);
         }

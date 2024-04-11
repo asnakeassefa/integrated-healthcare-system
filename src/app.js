@@ -13,10 +13,9 @@ app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
-mongoose.connect(`mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_URL}`)
+mongoose.connect(`mongodb://127.0.0.1:27017/hospital`)
     .then(() => console.log('MongoDB Connected...'))
     .catch(err => console.log(err));
-
 // Use Routes
 app.use(routes); // use imported routes
 

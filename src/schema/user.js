@@ -25,10 +25,17 @@ const UserSchema = new Schema({
     required: true,
     minlength:8
   },
+  gender: {
+    type: String,
+    enum: [ 'F','M'],
+    required: true,
+  },
   active:{
 type:Boolean,
 required:true
   }
+}, {
+  timestamps: true  // This will add `createdAt` and `updatedAt` fields
 });
 
 
@@ -37,7 +44,7 @@ UserSchema.pre('save', function(next) {
   // validation logic here
   // `this` refers to the document being saved
   if (validateEmail( this.email) && ValidateUserName(this.userName) && this.password.length>=8) {
-    this.password= hashWithSalt(this.password,process.env.SALT);
+    this.password= hashWithSalt(this.password,`${process.env.SALT}`);
     this.active=true;
     next();
   } else {

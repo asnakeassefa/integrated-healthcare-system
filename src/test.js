@@ -1,11 +1,12 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+require('dotenv').config();
 
 
 function verifyToken(token,roles)  {
     
 
-    jwt.verify(token,  `${process.env.ACCESS_TOKEN_SECRET}`, function(err, decoded) {
+    jwt.verify(token, 'shhhhh', function(err, decoded) {
         if (err) {
             console.log("err");
           return false;
@@ -19,11 +20,11 @@ function verifyToken(token,roles)  {
     
     }
 
-function hashWithSalt(input, salt) {
-    const hash = crypto.createHmac('sha256', salt);
-    hash.update(input);
-    const value = hash.digest('hex');
-    return value;
-}
+let token = jwt.sign({ username: "fs",role:"Admin" },  'shhhdhh' , { expiresIn: '15m' });
 
-module.exports={verifyToken,hashWithSalt};
+console.log(token)
+if (!verifyToken(token,["Admin"])){
+console.log("failed")
+}
+   else
+   console.log("sdsds")  

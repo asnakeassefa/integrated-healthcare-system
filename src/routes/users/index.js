@@ -9,12 +9,14 @@ const updateRole=require("./updateRole");
 router.use('/update',updateUser );
 
 
-router.use(function( req, res,) {
-  const Token = req.body.token;
+router.use(function( req, res,next) {
+  const token = req.body.token;
 
- if (!verifyToken(token,["admin"])){
-  next("!Forbidden");
- }
+ if (!verifyToken(token,["Admin"])){
+  res.status(401).send('unautorised!'); 
+}
+ 
+
 });
 //protected
 
