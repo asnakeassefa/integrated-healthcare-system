@@ -2,7 +2,6 @@
 // import Staff from '../staff/model'
 // import VisitInterface from './interface'
 
-
 // // Define the Staff Schema
 // const VisitSchema = new Schema({
 //   user:{

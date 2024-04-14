@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose')
 const logger = require('../common/logger')
 
@@ -20,6 +19,6 @@ db.on('error', (err) => logger.error('connection with db error', err))
 db.on('close', () => logger.info('connection closed to db'))
 db.once('open', () => logger.info(`Connected to the database instance on ${DB_URI}`))
 
-module.exports ={
+module.exports = {
   Connection: db,
 }

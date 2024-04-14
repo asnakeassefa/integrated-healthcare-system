@@ -78,7 +78,6 @@
 //   }
 // }
 
-
 // // get the past visits from a specific date
 // const getVisitHistoryByDate = async (req, res, next) => {
 //   try {
@@ -91,7 +90,6 @@
 //   }
 // }
 
-
 // // get visit history by appointment date
 // const getVisitHistoryByAppointmentDate = async (req, res, next) => {
 //   try {
@@ -103,7 +101,7 @@
 //     res.status(500).json({ error: "Failed to fetch visit history by appointment date" });
 //   }
 // }
- 
+
 // export default {
 //   createVisitHistory,
 //   getAllVisitHistory,

@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 
 // Define the Staff Schema
 const RoleSchema = new mongoose.Schema({
-  name:{
-    type:String,
-    unique:true,
-    reqired:true,
+  name: {
+    type: String,
+    unique: true,
+    reqired: true,
   },
 })
 

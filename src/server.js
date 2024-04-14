@@ -1,10 +1,10 @@
 const app = require('./app')
-const os = require('os');
-const logger = require('./common/logger');
-const mongodb = require('./services/db');
+const os = require('os')
+const logger = require('./common/logger')
+const mongodb = require('./services/db')
 
 // to use env variables
-require('dotenv').config();
+require('dotenv').config()
 
 const PORT = process.env.PORT
 

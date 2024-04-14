@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 // Define the User Schema
 const UserSchema = new mongoose.Schema({
   username: {
@@ -20,9 +20,9 @@ const UserSchema = new mongoose.Schema({
     ref: 'Role', // corrected 'role' to 'Role'
     required: true,
   },
-});
+})
 
 // Create the User model
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', UserSchema)
 
-module.exports = User;
+module.exports = User
