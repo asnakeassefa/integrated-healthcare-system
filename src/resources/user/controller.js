@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt')
 const user = require('./model')
 const generateTokens = require('../../utils/generateToken')
 
-const Role = require('../role/model')
+const UserRole = require('../role/model')
 const { log } = require('console')
 require('dotenv').config()
 
@@ -20,24 +20,30 @@ const addRole = async (req, res, next) => {
 
 const signup = async (req, res, next) => {
   try {
-    const { username, name, userpassword, userRole } = req.body
+    const { username, name, password, role } = req.body
+    
+    // check if user already exists
+    const existingUser = await user.findOne({ username: username })
+    if (existingUser) {
+      return res.status(409).json({ error: 'User already exists' })
+    }
 
-    const role = await Role.findOne({ name: userRole })
-    if (!role) {
+    const Role = await UserRole.findOne({ name: role })
+    if (!Role) {
       return res.status(404).json({ error: 'Role not found' })
     }
     // salting and hashing password
-    const password = await bcrypt.hash(userpassword, 10)
-    console.log(password)
-    if (password == null) {
-      console.error(hashedPassword)
+    const hashedPassword = await bcrypt.hash(password, 10)
+    // console.log(hashedPassword)
+    if (hashedPassword == null) {
+      // console.error(hashedPassword)
       return res.status(500).json({ error: 'Failed to hash password' })
     }
     const newUser = new user({
       username,
       name,
-      password,
-      role,
+      hashedPassword,
+      Role,
     })
 
     await newUser.save()
@@ -52,11 +58,11 @@ const login = async (req, res, next) => {
   try {
     const { username, password } = req.body
     const targetUser = await user.findOne({ username: username })
-    log(targetUser)
+    // log(targetUser)
     if (!targetUser) {
       return res.status(404).json({ error: 'User not found' })
     }
-    const validPassword = await bcrypt.compare(password, targetUser.password)
+    const validPassword = await bcrypt.compare(password, targetUser.hashedPassword)
     if (!validPassword) {
       return res.status(401).json({ error: 'Invalid password' })
     }

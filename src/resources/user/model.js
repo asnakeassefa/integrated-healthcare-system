@@ -8,14 +8,13 @@ const UserSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    unique: true,
     required: true,
   },
-  password: {
+  hashedPassword: {
     type: String,
     required: true,
   },
-  role: {
+  Role: {
     type: mongoose.Schema.Types.ObjectId, // corrected 'types' to 'Types'
     ref: 'Role', // corrected 'role' to 'Role'
     required: true,
