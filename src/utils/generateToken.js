@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
-async function generateTokens(user,role) {
+async function generateTokens(user) {
   const accessTokenSecret = process.env.APP_SECRET
   const refreshTokenSecret = process.env.REFRESH_SECRET
 
