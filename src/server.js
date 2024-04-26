@@ -1,10 +1,10 @@
-import app from './app'
-import * as os from 'os'
-import logger from './common/logger'
-import mongodb from './services/db'
+const app = require('./app')
+const os = require('os')
+const logger = require('./common/logger')
+const mongodb = require('./services/db')
 
 // to use env variables
-import './common/env'
+require('dotenv').config()
 
 const PORT = process.env.PORT
 
