@@ -4,17 +4,17 @@ const generateTokens = require('../../utils/generateToken')
 const UserRole = require('../role/model')
 require('dotenv').config()
 
-const addRole = async (req, res, next) => {
-  try {
-    const { name } = req.body
-    const newRole = new Role({ name })
-    await newRole.save()
-    res.status(201).json(newRole)
-  } catch (error) {
-    console.error('Error adding Role:', error)
-    res.status(500).json({ error: 'Failed to add role' })
-  }
-}
+// const addRole = async (req, res, next) => {
+//   try {
+//     const { name } = req.body
+//     const newRole = new Role({ name })
+//     await newRole.save()
+//     res.status(201).json(newRole)
+//   } catch (error) {
+//     console.error('Error adding Role:', error)
+//     res.status(500).json({ error: 'Failed to add role' })
+//   }
+// }
 
 const signup = async (req, res, next) => {
 
@@ -73,7 +73,7 @@ const login = async (req, res, next) => {
     }
     targetName = targetUser.name
     id = targetUser._id
-    const { accessToken, refreshToken } = await generateTokens(targetUser, targetUser.role.name)
+    const { accessToken, refreshToken } = await generateTokens(targetUser)
 
     res.status(200).json({ id, targetName, accessToken, refreshToken })
   } catch (error) {
@@ -83,5 +83,5 @@ const login = async (req, res, next) => {
 module.exports = {
   signup,
   login,
-  addRole,
+  // addRole,
 }
