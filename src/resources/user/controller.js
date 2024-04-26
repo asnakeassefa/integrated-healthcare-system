@@ -1,9 +1,7 @@
 const bcrypt = require('bcrypt')
-const user = require('./model')
+const User = require('./model')
 const generateTokens = require('../../utils/generateToken')
-
 const UserRole = require('../role/model')
-const { log } = require('console')
 require('dotenv').config()
 
 const addRole = async (req, res, next) => {
@@ -19,17 +17,24 @@ const addRole = async (req, res, next) => {
 }
 
 const signup = async (req, res, next) => {
+
+
   try {
-    const { username, name, password, role } = req.body
+    const userRole = await UserRole.findById(req.Role)
+    if (userRole.name != 'Admin') {
+      console.log(req.Role)
+      return res.status(403).json({ message: 'You are not authorized to add order.' })
+    }
+    const { username, name, password, roleName } = req.body
     
     // check if user already exists
-    const existingUser = await user.findOne({ username: username })
+    const existingUser = await User.findOne({ username: username })
     if (existingUser) {
       return res.status(409).json({ error: 'User already exists' })
     }
 
-    const Role = await UserRole.findOne({ name: role })
-    if (!Role) {
+    const role = await UserRole.findOne({ name: roleName })
+    if (!role) {
       return res.status(404).json({ error: 'Role not found' })
     }
     // salting and hashing password
@@ -39,11 +44,11 @@ const signup = async (req, res, next) => {
       // console.error(hashedPassword)
       return res.status(500).json({ error: 'Failed to hash password' })
     }
-    const newUser = new user({
+    const newUser = new User({
       username,
       name,
       hashedPassword,
-      Role,
+      role,
     })
 
     await newUser.save()
@@ -57,7 +62,7 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { username, password } = req.body
-    const targetUser = await user.findOne({ username: username })
+    const targetUser = await User.findOne({ username: username })
     // log(targetUser)
     if (!targetUser) {
       return res.status(404).json({ error: 'User not found' })
@@ -68,7 +73,7 @@ const login = async (req, res, next) => {
     }
     targetName = targetUser.name
     id = targetUser._id
-    const { accessToken, refreshToken } = await generateTokens(targetUser)
+    const { accessToken, refreshToken } = await generateTokens(targetUser, targetUser.role.name)
 
     res.status(200).json({ id, targetName, accessToken, refreshToken })
   } catch (error) {

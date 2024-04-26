@@ -1,6 +1,6 @@
 const Patient = require('./model')
 // register patient
-const registerUser = async (req, res) => {
+const registerPatient = async (req, res) => {
   try {
     const { fullName, atrNumber, birthDate, sex, phoneNumber, subCity, kebele, houseNumber } = req.body
 
@@ -48,10 +48,10 @@ const getAllPatients = async (req, res) => {
 // getPatient
 const getPatient = async (req, res) => {
   try {
-    const { fullName } = req.params
+    const { atrId } = req.params
 
     // Find the patient by ID
-    const patient = await Patient.find({ fullName: fullName})
+    const patient = await Patient.find({atrNumber:atrId})
 
     // If patient not found
     if (!patient) {
@@ -65,4 +65,4 @@ const getPatient = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' })
   }
 }
-module.exports = { registerUser, getAllPatients, getPatient}
+module.exports = { registerPatient, getAllPatients, getPatient}

@@ -14,7 +14,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  Role: {
+  role: {
     type: mongoose.Schema.Types.ObjectId, // corrected 'types' to 'Types'
     ref: 'Role', // corrected 'role' to 'Role'
     required: true,

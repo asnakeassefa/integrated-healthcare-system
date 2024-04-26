@@ -4,9 +4,9 @@ const auth = require('../../middlewares/auth')
 
 const router = express.Router()
 
-router.post('/atrRegister', userController.registerUser)
+router.post('/atrRegister', userController.registerPatient)
 router.get('/allAtrPatients', userController.getAllPatients)
-router.get('/atrPatient:fullName', userController.getPatient)
+router.get('/atrPatient/:atrId', userController.getPatient)
 
 
 module.exports = router

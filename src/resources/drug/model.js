@@ -15,6 +15,6 @@ const DrugSchema = new mongoose.Schema({
 })
 
 // Create the User model
-const User = mongoose.model('User', UserSchema)
+const Drug = mongoose.model('Drug', DrugSchema)
 
-module.exports = User
+module.exports = Drug
