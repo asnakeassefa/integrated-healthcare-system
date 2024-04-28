@@ -10,6 +10,10 @@ const addBed = async (req, res) => {
     if (!room || !bedNumber){
         res.status(400).json({ message: 'room and bednumber are required' })
     }
+    const existingBed = await Bed.findOne({bedNumber});
+    if (existingBed){
+        return res.status(409).json({ message: 'Bed already exists' });
+    }
     const bed = new Bed({room,bedNumber});
     await bed.save();
     res.status(201).json({ message: 'Bed added successfully' });
