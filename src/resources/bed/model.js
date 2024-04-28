@@ -7,7 +7,8 @@ const BedSchema = new mongoose.Schema({
   },
   bedNumber:{
     type:String,
-    default:false,
+    unique:true,
+    require:true,
   },
 })
 
