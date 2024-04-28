@@ -4,21 +4,19 @@ const generateTokens = require('../../utils/generateToken')
 const UserRole = require('../role/model')
 require('dotenv').config()
 
-// const addRole = async (req, res, next) => {
-//   try {
-//     const { name } = req.body
-//     const newRole = new Role({ name })
-//     await newRole.save()
-//     res.status(201).json(newRole)
-//   } catch (error) {
-//     console.error('Error adding Role:', error)
-//     res.status(500).json({ error: 'Failed to add role' })
-//   }
-// }
+const addRole = async (req, res, next) => {
+  try {
+    const { name } = req.body
+    const newRole = new Role({ name })
+    await newRole.save()
+    res.status(201).json(newRole)
+  } catch (error) {
+    console.error('Error adding Role:', error)
+    res.status(500).json({ error: 'Failed to add role' })
+  }
+}
 
 const signup = async (req, res, next) => {
-
-
   try {
     const userRole = await UserRole.findById(req.Role)
     if (userRole.name != 'Admin') {
@@ -26,7 +24,7 @@ const signup = async (req, res, next) => {
       return res.status(403).json({ message: 'You are not authorized to add order.' })
     }
     const { username, name, password, roleName } = req.body
-    
+
     // check if user already exists
     const existingUser = await User.findOne({ username: username })
     if (existingUser) {
@@ -62,7 +60,7 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { username, password } = req.body
-    const targetUser = await User.findOne({ username: username })
+    const targetUser = await User.findOne({ username: username }).populate('role')
     // log(targetUser)
     if (!targetUser) {
       return res.status(404).json({ error: 'User not found' })
@@ -73,9 +71,10 @@ const login = async (req, res, next) => {
     }
     targetName = targetUser.name
     id = targetUser._id
+    role = targetUser.role.name
     const { accessToken, refreshToken } = await generateTokens(targetUser)
 
-    res.status(200).json({ id, targetName, accessToken, refreshToken })
+    res.status(200).json({ id, targetName, role, accessToken, refreshToken })
   } catch (error) {
     next(error)
   }
