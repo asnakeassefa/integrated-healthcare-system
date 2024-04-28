@@ -79,8 +79,32 @@ const login = async (req, res, next) => {
     next(error)
   }
 }
+
+const getusers = async (req, res) => {
+  try {
+    const userRole = await UserRole.findById(req.Role)
+    if (userRole.name != 'Admin') {
+      console.log(req.Role)
+      return res.status(403).json({ message: 'You are not authorized to add order.' })
+    }
+    const users = await User.find().populate('role')
+    const usersList = users.map((user) => {
+      return {
+        id: user._id,
+        name: user.name,
+        role: user.role.name,
+      }
+    })
+    res.status(200).json(usersList)
+  } catch (error) {
+    console.error('Error fetching users:', error)
+    res.status(500).json({ error: 'Failed to fetch users' })
+  }
+}
+
 module.exports = {
   signup,
   login,
+  getusers,
   // addRole,
 }
