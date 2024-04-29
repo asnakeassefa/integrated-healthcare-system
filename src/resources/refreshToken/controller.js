@@ -7,11 +7,11 @@ const refresh = async (req, res, next) => {
 
     const refreshTokenSecret = process.env.REFRESH_SECRET;
     try {
-      const {oldToken} = req.body;
-      if (!oldToken) {
+      const {token} = req.body;
+      if (!token) {
         return res.status(401).json({ message: 'Missing refresh token' });
       }
-      const decoded = jwt.verify(oldToken, refreshTokenSecret);
+      const decoded = jwt.verify(token, refreshTokenSecret);
       const userId = decoded.userId;
 
       const user = await User.findById(userId);
