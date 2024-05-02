@@ -60,7 +60,7 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { username, password } = req.body
-    const targetUser = await User.findOne({ username: username }).populate('role')
+    const targetUser = await User.findOne({ username: username }).populate('role').populate('name').populate('username')
     // log(targetUser)
     if (!targetUser) {
       return res.status(404).json({ error: 'User not found' })
@@ -70,11 +70,13 @@ const login = async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid password' })
     }
     targetName = targetUser.name
+    const targetUsername = targetUser.username
     id = targetUser._id
     role = targetUser.role.name
+
     const { accessToken, refreshToken } = await generateTokens(targetUser)
 
-    res.status(200).json({ id, targetName, role, accessToken, refreshToken })
+    res.status(200).json({ id, targetName,targetUsername, role, accessToken, refreshToken })
   } catch (error) {
     next(error)
   }
