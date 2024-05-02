@@ -72,6 +72,9 @@ const getPassedAppointment = async (req, res) => {
 }
 // get all patient visit
 
+// get Is user ontime
+
+
 module.exports = {
   updateLastVisit,
   getVisits,

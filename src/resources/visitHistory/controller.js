@@ -32,9 +32,6 @@ const createVisit = async (req, res) => {
       return res.status(404).json({ message: 'Drug not found.' })
     }
 
-    const nextVisitDate = new Date(visitDate)
-    nextVisitDate.setDate(nextVisitDate.getDate() + 30)
-    // Create the visit with the user, patient, and drug
     const visit = new Visit({
       user: user._id,
       patient: patient._id,
@@ -44,13 +41,19 @@ const createVisit = async (req, res) => {
       visitDate: visitDate,
       nextAppointmentDate: nextVisitDate,
     })
+    const nextVisitDate = new Date(visitDate)
+    nextVisitDate.setDate(nextVisitDate.getDate() + 30)
+    // Create the visit with the user, patient, and drug
     // Save the visit to the database
-    await visit.save()
     // check if patient had visit history
     const visitedPatient = await LastVisit.findOne({ Patient: patient })
 
     if (visitedPatient) {
       console.log('patient has visited so update')
+
+      if (visitedPatient.nextAppointmentDate < visitDate) {
+        visit.onTime = false
+      }
       const lastVisit = await LastVisit.findOneAndUpdate(
         { Patient: patient },
         { visitDate: visitDate, nextAppointmentData: nextVisitDate },
@@ -61,12 +64,14 @@ const createVisit = async (req, res) => {
       const lastVisit = await LastVisit({
         Patient: patient,
         visitDate: visitDate,
-        nextAppointmentDate: nextVisitDate
+        nextAppointmentDate: nextVisitDate,
       })
+
       // here in visit
       await lastVisit.save()
       console.log('last visit:', lastVisit)
     }
+    await visit.save()
     // update the visitData and nextAppointmentData
     return res.status(201).json({ message: 'Visit history created successfully.', visit: visit })
   } catch (error) {
@@ -87,4 +92,17 @@ const getVisits = async (req, res) => {
   }
 }
 
-module.exports = { createVisit, getVisits}
+// get visit history by patientId
+
+const getVisitHistoriesByPatientId = async (req, res) => {
+  try {
+    const { patientId } = req.params
+    const visitHistories = await Visit.find({ patient: patientId })
+    return res.status(200).json({ visitHistories })
+  } catch (error) {
+    console.error('Error getting visit histories:', error)
+    return res.status(500).json({ message: 'Internal server error.' })
+  }
+}
+
+module.exports = { createVisit, getVisits, getVisitHistoriesByPatientId }

@@ -30,6 +30,11 @@ const VisitSchema = new mongoose.Schema({
     type:Date,
     required:true,
   },
+  onTime:{
+    type:Boolean,
+    required:true,
+    default:true,
+  },
   nextAppointmentDate:{
     type:Date,
     required:true,
