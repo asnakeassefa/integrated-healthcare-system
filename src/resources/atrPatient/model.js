@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const LastVisit = require('../visit/model')
 // Define the User Schema
 const PatientSchema = new mongoose.Schema({
   fullName: {
@@ -18,6 +19,10 @@ const PatientSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  severeLevel:{
+    type: Number,
+    default:0,
+  },
   phoneNumber:{
     type:String,
     required:true,
@@ -34,7 +39,18 @@ const PatientSchema = new mongoose.Schema({
     type:String,
     required:true,
   },
-  
+  visitDate:{
+    type:Date,
+    default:null,
+  },
+  nextAppointmentDate:{
+    type:Date,
+    default:null,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 })
 
 // Create the User model

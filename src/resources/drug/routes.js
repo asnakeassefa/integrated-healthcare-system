@@ -8,6 +8,6 @@ const router = express.Router()
 router.route('/addDrug').post(drugController.addDrug)
 router.route('/getAllDrugs').get(drugController.getAllDrugs)
 router.route('/getDrug/:id').get(drugController.getDrugById)
-// router.route('/addRole').post(userController.addRole)
+router.route('/deleteDrug/:id').delete(drugController.deleteDrug)
 
 module.exports = router

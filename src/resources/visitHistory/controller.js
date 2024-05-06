@@ -31,6 +31,8 @@ const createVisit = async (req, res) => {
     if (!drug) {
       return res.status(404).json({ message: 'Drug not found.' })
     }
+    const nextVisitDate = new Date(visitDate)
+    nextVisitDate.setDate(nextVisitDate.getDate() + 30)
 
     const visit = new Visit({
       user: user._id,
@@ -41,36 +43,38 @@ const createVisit = async (req, res) => {
       visitDate: visitDate,
       nextAppointmentDate: nextVisitDate,
     })
-    const nextVisitDate = new Date(visitDate)
-    nextVisitDate.setDate(nextVisitDate.getDate() + 30)
     // Create the visit with the user, patient, and drug
     // Save the visit to the database
     // check if patient had visit history
-    const visitedPatient = await LastVisit.findOne({ Patient: patient })
+    // const visitedPatient = await LastVisit.findOne({ Patient: patient })
+    
+    // if (visitedPatient) {
+    //   console.log('patient has visited so update')
+      
+    //   if (visitedPatient.nextAppointmentDate < visitDate) {
+    //     visit.onTime = false
+    //   }
+    //   const lastVisit = await LastVisit.findOneAndUpdate(
+    //     { Patient: patient },
+    //     { visitDate: visitDate, nextAppointmentData: nextVisitDate },
+    //     { new: true },
+    //   )
+    // } else {
+    //   console.log('patient has not visited so create')
+    //   const lastVisit = await LastVisit({
+    //     Patient: patient,
+    //     visitDate: visitDate,
+    //     nextAppointmentDate: nextVisitDate,
+    //   })
+      
+    //   // here in visit
+    //   await lastVisit.save()
+    //   console.log('last visit:', lastVisit)
+    // }
 
-    if (visitedPatient) {
-      console.log('patient has visited so update')
-
-      if (visitedPatient.nextAppointmentDate < visitDate) {
-        visit.onTime = false
-      }
-      const lastVisit = await LastVisit.findOneAndUpdate(
-        { Patient: patient },
-        { visitDate: visitDate, nextAppointmentData: nextVisitDate },
-        { new: true },
-      )
-    } else {
-      console.log('patient has not visited so create')
-      const lastVisit = await LastVisit({
-        Patient: patient,
-        visitDate: visitDate,
-        nextAppointmentDate: nextVisitDate,
-      })
-
-      // here in visit
-      await lastVisit.save()
-      console.log('last visit:', lastVisit)
-    }
+    patient.visitDate = visitDate
+    patient.nextAppointmentDate = nextVisitDate
+    await patient.save();
     await visit.save()
     // update the visitData and nextAppointmentData
     return res.status(201).json({ message: 'Visit history created successfully.', visit: visit })
