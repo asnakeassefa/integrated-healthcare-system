@@ -13,6 +13,7 @@ const visitRouter = require('../resources/visitHistory/routes')
 const currVisit = require('../resources/visit/routes')
 const bedRouter = require('../resources/bedBooking/routes')
 const bed = require('../resources/bed/routes')
+const report = require('../resources/report/routes')
 // Higher level routes definition
 router.use('/user', userRouter)
 router.use('/refresh', refreshTokenRouter)
@@ -23,5 +24,6 @@ router.use('/pharmacy', pharmacy)
 router.use('/visit', visitRouter)
 router.use('/patientVisit', currVisit)
 router.use('/bed', bedRouter, bed)
+router.use('/report', report)
 
 module.exports = router
