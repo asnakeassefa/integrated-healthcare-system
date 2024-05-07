@@ -3,7 +3,7 @@ const LastVisit = require('../visit/model')
 // register patient
 const registerPatient = async (req, res) => {
   try {
-    const { fullName, atrNumber, birthDate, sex,severeLevel, phoneNumber, subCity, kebele, houseNumber,visitDate,nextAppointmentDate } = req.body
+    const { fullName, atrNumber, birthDate, sex,severityLevel, phoneNumber, subCity, kebele, houseNumber,visitDate,nextAppointmentDate } = req.body
 
     // Check if the user already exists
     const existingUser = await Patient.findOne({ atrNumber })
@@ -17,7 +17,7 @@ const registerPatient = async (req, res) => {
       atrNumber,
       birthDate,
       sex,
-      severeLevel,
+      severityLevel,
       phoneNumber,
       subCity,
       kebele,

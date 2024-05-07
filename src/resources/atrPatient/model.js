@@ -19,9 +19,9 @@ const PatientSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  severeLevel:{
+  severityLevel:{
     type: Number,
-    default:0,
+    required:true,
   },
   phoneNumber:{
     type:String,
