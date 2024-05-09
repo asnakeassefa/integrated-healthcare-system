@@ -1,16 +1,32 @@
-const Patient = require('./model')
+const Patient = require('./model').Patient
 const LastVisit = require('../visit/model')
+const patientCount = require('./model').PatientCountModel
 // register patient
 const registerPatient = async (req, res) => {
   try {
-    const { fullName, atrNumber, birthDate, sex,severityLevel, phoneNumber, subCity, kebele, houseNumber,visitDate,nextAppointmentDate } = req.body
-
+    var {
+      fullName,
+      atrNumber,
+      birthDate,
+      sex,
+      severityLevel,
+      phoneNumber,
+      subCity,
+      kebele,
+      houseNumber,
+      visitDate,
+      nextAppointmentDate,
+    } = req.body
     // Check if the user already exists
     const existingUser = await Patient.findOne({ atrNumber })
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' })
     }
 
+    if (!atrNumber) {
+      var pCount = await patientCount.findOne({ name: 'PatientCount' })
+      atrNumber = 'T' + (1 + pCount.userCount).toString()
+    }
     // Create a new user
     const newUser = new Patient({
       fullName,
@@ -28,7 +44,9 @@ const registerPatient = async (req, res) => {
 
     // Save the user to the database
     await newUser.save()
-
+    var pCount = await patientCount.findOne({ name: 'PatientCount' })
+    pCount.userCount += 1
+    await pCount.save()
     res.status(201).json({ message: 'User registered successfully', user: newUser })
   } catch (error) {
     console.error('Error registering user:', error)
@@ -72,7 +90,7 @@ const getPatient = async (req, res) => {
     // }
 
     // If patient found, return it
-    res.status(200).json({ patient})
+    res.status(200).json({ patient })
   } catch (error) {
     console.error('Error fetching patient:', error)
     res.status(500).json({ error: 'Internal server error' })

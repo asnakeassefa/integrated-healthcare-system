@@ -15,37 +15,37 @@ const PatientSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  sex:{
+  sex: {
     type: String,
     required: true,
   },
-  severityLevel:{
+  severityLevel: {
     type: Number,
-    required:true,
+    required: true,
   },
-  phoneNumber:{
-    type:String,
-    required:true,
+  phoneNumber: {
+    type: String,
+    required: true,
   },
-  subCity:{
-    type:String,
-    required:true
+  subCity: {
+    type: String,
+    required: true,
   },
-  kebele:{
-    type:String,
-    required:true,
+  kebele: {
+    type: String,
+    required: true,
   },
-  houseNumber:{
-    type:String,
-    required:true,
+  houseNumber: {
+    type: String,
+    required: true,
   },
-  visitDate:{
-    type:Date,
-    default:null,
+  visitDate: {
+    type: Date,
+    default: null,
   },
-  nextAppointmentDate:{
-    type:Date,
-    default:null,
+  nextAppointmentDate: {
+    type: Date,
+    default: null,
   },
   createdAt: {
     type: Date,
@@ -53,7 +53,19 @@ const PatientSchema = new mongoose.Schema({
   },
 })
 
+const PatientCount = new mongoose.Schema({
+  name: {
+    type: String,
+    default: 'PatientCount',
+  },
+  userCount: {
+    type: Number,
+    initial: 0,
+    required: true,
+  },
+})
+
 // Create the User model
 const Patient = mongoose.model('Patient', PatientSchema)
-
-module.exports = Patient
+const PatientCountModel = mongoose.model('PatientCount', PatientCount)
+module.exports = { Patient, PatientCountModel }
