@@ -47,6 +47,38 @@ const PatientSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  supporterName: {
+    type: String,
+    default: null,
+  },
+  supporterWereda: {
+    type: String,
+    default: null,
+  },
+  supporterKebele: {
+    type: String,
+    default: null,
+  },
+  supporterHouseNumber: {
+    type: String,
+    default: null,
+  },
+  supporterPhone: {
+    type: String,
+    default: null,
+  },
+  previousExposure: {
+    type: String,
+    default: null,
+  },
+  PatientStatus: {
+    type: String,
+    default: null,
+  },
+  additionalNote: {
+    type: String,
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
