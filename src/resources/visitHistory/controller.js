@@ -43,38 +43,10 @@ const createVisit = async (req, res) => {
       visitDate: visitDate,
       nextAppointmentDate: nextVisitDate,
     })
-    // Create the visit with the user, patient, and drug
-    // Save the visit to the database
-    // check if patient had visit history
-    // const visitedPatient = await LastVisit.findOne({ Patient: patient })
-    
-    // if (visitedPatient) {
-    //   console.log('patient has visited so update')
-      
-    //   if (visitedPatient.nextAppointmentDate < visitDate) {
-    //     visit.onTime = false
-    //   }
-    //   const lastVisit = await LastVisit.findOneAndUpdate(
-    //     { Patient: patient },
-    //     { visitDate: visitDate, nextAppointmentData: nextVisitDate },
-    //     { new: true },
-    //   )
-    // } else {
-    //   console.log('patient has not visited so create')
-    //   const lastVisit = await LastVisit({
-    //     Patient: patient,
-    //     visitDate: visitDate,
-    //     nextAppointmentDate: nextVisitDate,
-    //   })
-      
-    //   // here in visit
-    //   await lastVisit.save()
-    //   console.log('last visit:', lastVisit)
-    // }
 
     patient.visitDate = visitDate
     patient.nextAppointmentDate = nextVisitDate
-    await patient.save();
+    await patient.save()
     await visit.save()
     // update the visitData and nextAppointmentData
     return res.status(201).json({ message: 'Visit history created successfully.', visit: visit })
@@ -88,7 +60,7 @@ const createVisit = async (req, res) => {
 
 const getVisits = async (req, res) => {
   try {
-    const visits = await Visit.find()
+    const visits = await Visit.find().populate('user').populate('patient').populate('drug')
     return res.status(200).json({ visits })
   } catch (error) {
     console.error('Error getting visits:', error)
@@ -102,6 +74,9 @@ const getVisitHistoriesByPatientId = async (req, res) => {
   try {
     const { patientId } = req.params
     const visitHistories = await Visit.find({ patient: patientId })
+      .populate('user')
+      .populate('patient')
+      .populate('drug')
     return res.status(200).json({ visitHistories })
   } catch (error) {
     console.error('Error getting visit histories:', error)
@@ -109,4 +84,21 @@ const getVisitHistoriesByPatientId = async (req, res) => {
   }
 }
 
-module.exports = { createVisit, getVisits, getVisitHistoriesByPatientId }
+// get upcoming appointments within the next 2 days
+const getUpcomingAppointments = async (req, res) => {
+  try {
+    // get data from user
+    const { days } = req.params
+    const today = new Date()
+    const twoDaysLater = new Date(today.getFullYear(), today.getMonth(), today.getDate() + parseInt(days))
+    const patients = await Patient.find({
+      nextAppointmentDate: { $gte: today, $lt: twoDaysLater },
+    })
+    res.status(200).json({ patients })
+  } catch (error) {
+    console.error('Error geting patients data:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+}
+
+module.exports = { createVisit, getVisits, getVisitHistoriesByPatientId, getUpcomingAppointments }
