@@ -8,7 +8,7 @@ const LastVisit = require('../visit/model')
 // Controller function to create a visit history
 const createVisit = async (req, res) => {
   try {
-    const { userId, patientId, drugId, otherDrug, pillNumber, visitDate } = req.body
+    const { userId, patientId, drugId, dosage,otherDrug, pillNumber,visitDate,remark,daysBeforeNextVisit} = req.body
     // Check if required fields are provided
     if (!userId || !patientId || !drugId || !pillNumber || !visitDate) {
       return res.status(400).json({ message: 'Please provide all required fields.' })
@@ -32,16 +32,18 @@ const createVisit = async (req, res) => {
       return res.status(404).json({ message: 'Drug not found.' })
     }
     const nextVisitDate = new Date(visitDate)
-    nextVisitDate.setDate(nextVisitDate.getDate() + 30)
+    nextVisitDate.setDate(nextVisitDate.getDate() + daysBeforeNextVisit)
 
     const visit = new Visit({
       user: user._id,
       patient: patient._id,
       drug: drug._id,
+      dosage: dosage,
       otherDrug: otherDrug,
       pillNumber: pillNumber,
       visitDate: visitDate,
       nextAppointmentDate: nextVisitDate,
+      remarks: remark,
     })
 
     patient.visitDate = visitDate

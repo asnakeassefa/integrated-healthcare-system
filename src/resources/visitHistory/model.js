@@ -19,6 +19,10 @@ const VisitSchema = new mongoose.Schema({
     ref:'Drug',
     require:true,
   },
+  dosage:{
+    type:Number,
+    required:true,
+  },
   otherDrug:{
     type:Array,
   },
@@ -30,6 +34,7 @@ const VisitSchema = new mongoose.Schema({
     type:Date,
     required:true,
   },
+
   onTime:{
     type:Boolean,
     required:true,
@@ -39,6 +44,10 @@ const VisitSchema = new mongoose.Schema({
     type:Date,
     required:true,
   },
+  remarks:{
+    type:String,
+  },
+
 })
 
 // Create the Staff model
