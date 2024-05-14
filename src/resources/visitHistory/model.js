@@ -20,7 +20,7 @@ const VisitSchema = new mongoose.Schema({
     require:true,
   },
   dosage:{
-    type:Number,
+    type:String,
     required:true,
   },
   otherDrug:{
