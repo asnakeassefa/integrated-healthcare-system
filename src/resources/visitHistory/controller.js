@@ -101,4 +101,20 @@ const getUpcomingAppointments = async (req, res) => {
   }
 }
 
-module.exports = { createVisit, getVisits, getVisitHistoriesByPatientId, getUpcomingAppointments }
+// get passed appointments
+const getPassedAppointments = async (req, res) => {
+  try {
+    const today = new Date()
+    const patients = await Patient.find({
+      nextAppointmentDate: { $lt: today },
+    })
+    res.status(200).json({ patients })
+  } catch (error) {
+    console.error('Error geting patients data:', error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+}
+
+
+
+module.exports = { createVisit, getVisits, getVisitHistoriesByPatientId, getUpcomingAppointments, getPassedAppointments}
