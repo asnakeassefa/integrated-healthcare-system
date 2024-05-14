@@ -1,6 +1,6 @@
 // add visitHistory
 const User = require('../user/model')
-const Patient = require('../atrPatient/model')
+const Patient = require('../atrPatient/model').Patient
 const Drug = require('../drug/model')
 const Visit = require('./model')
 const LastVisit = require('../visit/model')
@@ -90,9 +90,9 @@ const getUpcomingAppointments = async (req, res) => {
     // get data from user
     const { days } = req.params
     const today = new Date()
-    const twoDaysLater = new Date(today.getFullYear(), today.getMonth(), today.getDate() + parseInt(days))
+    const daysLater = new Date(today.getFullYear(), today.getMonth(), today.getDate() + parseInt(days))
     const patients = await Patient.find({
-      nextAppointmentDate: { $gte: today, $lt: twoDaysLater },
+      nextAppointmentDate: { $gte: today, $lt: daysLater },
     })
     res.status(200).json({ patients })
   } catch (error) {
