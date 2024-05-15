@@ -21,8 +21,9 @@ const registerPatient = async (req, res) => {
       supporterKebele,
       supporterPhone,
       previousExposure,
-      PatientStatus,
-      additionalNote,
+      patientStatus,
+      sideEffect,
+      concomitantDisease
     } = req.body
     // Check if the user already exists
     const existingUser = await Patient.findOne({ atrNumber })
@@ -52,8 +53,9 @@ const registerPatient = async (req, res) => {
       supporterKebele,
       supporterPhone,
       previousExposure,
-      PatientStatus,
-      additionalNote,
+      patientStatus,
+      sideEffect,
+      concomitantDisease
     })
 
     // Save the user to the database
@@ -118,8 +120,9 @@ const updatePatient = async (req, res) => {
       supporterKebele,
       supporterPhone,
       previousExposure,
-      PatientStatus,
-      additionalNote,
+      patientStatus,
+      sideEffect,
+      concomitantDisease,
     } = req.body
 
     const patient = await Patient.findOne({ atrNumber })
@@ -140,8 +143,9 @@ const updatePatient = async (req, res) => {
     if (supporterKebele) patient.supporterKebele = supporterKebele
     if (supporterPhone) patient.supporterPhone = supporterPhone
     if (previousExposure) patient.previousExposure = previousExposure
-    if (PatientStatus) patient.PatientStatus = PatientStatus
-    if (additionalNote) patient.additionalNote = additionalNote
+    if (patientStatus) patient.patientStatus = patientStatus
+    if (sideEffect) patient.sideEffect = sideEffect
+    if (concomitantDisease) patient.concomitantDisease = concomitantDisease
 
     await patient.save()
 

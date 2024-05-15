@@ -19,6 +19,9 @@ const PatientSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  weight: {
+    type: Number,
+  },
   severityLevel: {
     type: Number,
     required: true,
@@ -71,11 +74,15 @@ const PatientSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  PatientStatus: {
+  patientStatus: {
     type: String,
     default: null,
   },
-  additionalNote: {
+  sideEffect: {
+    type: String,
+    default: null,
+  },
+  concomitantDisease: {
     type: String,
     default: null,
   },

@@ -31,8 +31,8 @@ const createVisit = async (req, res) => {
     if (!drug) {
       return res.status(404).json({ message: 'Drug not found.' })
     }
-    const nextVisitDate = new Date(visitDate)
-    nextVisitDate.setDate(nextVisitDate.getDate() + daysBeforeNextVisit)
+    const today = new Date(visitDate)
+    const nextVisitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + parseInt(daysBeforeNextVisit))
 
     const visit = new Visit({
       user: user._id,
@@ -47,6 +47,7 @@ const createVisit = async (req, res) => {
     })
 
     patient.visitDate = visitDate
+
     patient.nextAppointmentDate = nextVisitDate
     await patient.save()
     await visit.save()
