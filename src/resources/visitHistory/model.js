@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const User = require('../user/model')
 const Patient = require('../atrPatient/model')
 const Drug = require('../drug/model')
+const { type } = require('os')
 // Define the Staff Schema
 const VisitSchema = new mongoose.Schema({
   user:{
@@ -34,7 +35,19 @@ const VisitSchema = new mongoose.Schema({
     type:Date,
     required:true,
   },
-
+  reason:{
+    type:String,
+    required:true,
+    enum:['start','refill','switch'],
+  },
+  inout:{
+    type:String,
+    required:true,
+    enum:['start','refill'],
+  },
+  serviceDelivery:{
+    type:String,
+  },
   onTime:{
     type:Boolean,
     required:true,

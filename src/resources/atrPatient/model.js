@@ -15,6 +15,9 @@ const PatientSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  dateEligible: {
+    type:Date,
+  },
   sex: {
     type: String,
     required: true,

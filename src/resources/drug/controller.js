@@ -36,6 +36,21 @@ const getDrugById = async (req, res) => {
   }
 }
 
+const updateDrug = async (req, res) => {
+  const { id } = req.params
+  const {amount } = req.body
+
+  try {
+    const drug = await Drug.findByIdAndUpdate(id, { amount }, { new: true })
+    if (!drug) {
+      return res.status(404).json({ message: 'Drug not found' })
+    }
+    res.json({message: 'Drug updated successfully'})
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
 const deleteDrug = async (req, res) => {
   const { id } = req.params
   try {
@@ -54,4 +69,5 @@ module.exports = {
   getAllDrugs,
   getDrugById,
   deleteDrug,
+  updateDrug
 }

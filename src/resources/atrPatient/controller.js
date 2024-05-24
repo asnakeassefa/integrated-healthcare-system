@@ -8,6 +8,7 @@ const registerPatient = async (req, res) => {
       fullName,
       atrNumber,
       birthDate,
+      dateEligible,
       sex,
       severityLevel,
       phoneNumber,
@@ -40,6 +41,7 @@ const registerPatient = async (req, res) => {
       fullName,
       atrNumber,
       birthDate,
+      dateEligible,
       sex,
       severityLevel,
       phoneNumber,
@@ -108,6 +110,7 @@ const updatePatient = async (req, res) => {
     const {
       fullName,
       birthDate,
+      dateEligible,
       severityLevel,
       phoneNumber,
       subCity,
@@ -131,6 +134,7 @@ const updatePatient = async (req, res) => {
     }
     if (fullName) patient.fullName = fullName
     if (birthDate) patient.birthDate = birthDate
+    if (dateEligible) patient.dateEligible = dateEligible
     if (severityLevel) patient.severityLevel = severityLevel
     if (phoneNumber) patient.phoneNumber = phoneNumber
     if (subCity) patient.subCity = subCity
