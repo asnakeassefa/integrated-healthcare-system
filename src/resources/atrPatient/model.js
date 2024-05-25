@@ -24,6 +24,7 @@ const PatientSchema = new mongoose.Schema({
   },
   weight: {
     type: Number,
+    default: null,
   },
   severityLevel: {
     type: Number,
@@ -54,6 +55,10 @@ const PatientSchema = new mongoose.Schema({
     default: null,
   },
   supporterName: {
+    type: String,
+    default: null,
+  },
+  supporterSubcity: {
     type: String,
     default: null,
   },

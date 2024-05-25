@@ -10,6 +10,7 @@ const registerPatient = async (req, res) => {
       birthDate,
       dateEligible,
       sex,
+      weight,
       severityLevel,
       phoneNumber,
       subCity,
@@ -18,7 +19,9 @@ const registerPatient = async (req, res) => {
       visitDate,
       nextAppointmentDate,
       supporterName,
+      supporterSubcity,
       supporterWereda,
+      supporterHouseNumber,
       supporterKebele,
       supporterPhone,
       previousExposure,
@@ -43,6 +46,7 @@ const registerPatient = async (req, res) => {
       birthDate,
       dateEligible,
       sex,
+      weight,
       severityLevel,
       phoneNumber,
       subCity,
@@ -51,8 +55,10 @@ const registerPatient = async (req, res) => {
       visitDate,
       nextAppointmentDate,
       supporterName,
+      supporterSubcity,
       supporterWereda,
       supporterKebele,
+      supporterHouseNumber,
       supporterPhone,
       previousExposure,
       patientStatus,
@@ -73,7 +79,6 @@ const registerPatient = async (req, res) => {
 }
 
 // getAllPatients
-
 const getAllPatients = async (req, res) => {
   try {
     // Fetch all patients from the database and add lastvisit date
