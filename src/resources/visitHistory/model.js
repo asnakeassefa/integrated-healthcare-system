@@ -15,9 +15,8 @@ const VisitSchema = new mongoose.Schema({
     ref:'Patient',
     required:true,
   },
-  drug:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:'Drug',
+  drugs:{
+    type:Array,
     require:true,
   },
   dosage:{

@@ -8,9 +8,9 @@ const LastVisit = require('../visit/model')
 // Controller function to create a visit history
 const createVisit = async (req, res) => {
   try {
-    const { userId, patientId, drugId, dosage,otherDrug, pillNumber,visitDate,remark,daysBeforeNextVisit,reason,inout,serviceDelivery} = req.body
+    const { userId, patientId, drugs, dosage,otherDrug, pillNumber,visitDate,remark,daysBeforeNextVisit,reason,inout,serviceDelivery} = req.body
     // Check if required fields are provided
-    if (!userId || !patientId || !drugId || !pillNumber || !visitDate) {
+    if (!userId || !patientId || !drugs || !pillNumber || !visitDate) {
       return res.status(400).json({ message: 'Please provide all required fields.' })
     }
 
@@ -26,10 +26,18 @@ const createVisit = async (req, res) => {
       return res.status(404).json({ message: 'Patient not found.' })
     }
 
+    if (!drugs) {
+      return res.status(404).json({ message: 'Drugs not found.' })
+    }
     // Find the drug by drugId
-    const drug = await Drug.findById(drugId)
-    if (!drug) {
-      return res.status(404).json({ message: 'Drug not found.' })
+    for (let i = 0; i < drugs.length; i++) {
+      const drug = await Drug.findById(drugs[i]._id)
+      if(drug.amount < drugs[i].amount){
+        return res.status(404).json({ message: 'Drug not available.' })
+      }
+      if (!drug) {
+        return res.status(404).json({ message: 'Drug not found.' })
+      }
     }
     const today = new Date(visitDate)
     const nextVisitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + parseInt(daysBeforeNextVisit))
@@ -37,7 +45,7 @@ const createVisit = async (req, res) => {
     const visit = new Visit({
       user: user._id,
       patient: patient._id,
-      drug: drug._id,
+      drug: drugs,
       dosage: dosage,
       otherDrug: otherDrug,
       pillNumber: pillNumber,
@@ -52,6 +60,11 @@ const createVisit = async (req, res) => {
     patient.visitDate = visitDate
 
     patient.nextAppointmentDate = nextVisitDate
+    for (let i = 0; i < drugs.length; i++) {
+      const drug = await Drug.findById(drugs[i]._id)
+      drug.amount -= drugs[i].amount
+      await drugs.save()
+    }
     await patient.save()
     await visit.save()
     // update the visitData and nextAppointmentData
