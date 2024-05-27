@@ -45,7 +45,7 @@ const createVisit = async (req, res) => {
     const visit = new Visit({
       user: user._id,
       patient: patient._id,
-      drug: drugs,
+      drugs: drugs,
       dosage: dosage,
       otherDrug: otherDrug,
       pillNumber: pillNumber,
@@ -63,9 +63,11 @@ const createVisit = async (req, res) => {
     for (let i = 0; i < drugs.length; i++) {
       const drug = await Drug.findById(drugs[i]._id)
       drug.amount -= drugs[i].amount
-      await drugs.save()
+      await drug.save()
     }
     await patient.save()
+    console.log('drugs:', drugs)
+    // console.log('visit:', visit)
     await visit.save()
     // update the visitData and nextAppointmentData
     return res.status(201).json({ message: 'Visit history created successfully.', visit: visit })
