@@ -87,7 +87,7 @@ const createVisit = async (req, res) => {
 
 const getVisits = async (req, res) => {
   try {
-    const visits = await Visit.find().populate('user').populate('patient').populate('drug')
+    const visits = await Visit.find().populate('user').populate('patient').populate('drugs')
     return res.status(200).json({ visits })
   } catch (error) {
     console.error('Error getting visits:', error)
@@ -103,7 +103,7 @@ const getVisitHistoriesByPatientId = async (req, res) => {
     const visitHistories = await Visit.find({ patient: patientId })
       .populate('user')
       .populate('patient')
-      .populate('drug')
+      .populate('drugs')
     return res.status(200).json({ visitHistories })
   } catch (error) {
     console.error('Error getting visit histories:', error)
