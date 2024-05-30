@@ -3,7 +3,7 @@ const User = require('../user/model')
 const Patient = require('../atrPatient/model').Patient
 const Drug = require('../drug/model')
 const Visit = require('./model')
-const LastVisit = require('../visit/model')
+const DispencedDrug = require('../drug/countModel')
 
 // Controller function to create a visit history
 const createVisit = async (req, res) => {
@@ -63,10 +63,16 @@ const createVisit = async (req, res) => {
     for (let i = 0; i < drugs.length; i++) {
       const drug = await Drug.findById(drugs[i]._id)
       drug.amount -= drugs[i].amount
+      const dispenceDrug = new DispencedDrug({
+        drugName: drug.drugName,
+        amount: drugs[i].amount,
+        date: visitDate,
+      })
+      await dispenceDrug.save()
       await drug.save()
     }
     await patient.save()
-    console.log('drugs:', drugs)
+    // console.log('drugs:', drugs)
     // console.log('visit:', visit)
     await visit.save()
     // update the visitData and nextAppointmentData

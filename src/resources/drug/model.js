@@ -16,6 +16,10 @@ const DrugSchema = new mongoose.Schema({
     type:Number,
     required:true,
   },
+  expireDate: {
+    type: Date,
+    required:true,
+  },
 })
 
 // Create the User model
