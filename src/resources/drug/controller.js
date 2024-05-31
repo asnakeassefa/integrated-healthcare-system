@@ -21,7 +21,7 @@ const addDrug = async (req, res) => {
     await newDrug.save()
     res.status(201).json(newDrug)
   } catch (error) {
-    res.status(400).json({ message: error.message })
+    res.status(400).json({ message: "Server error"})
   }
 }
 
@@ -29,9 +29,10 @@ const addDrug = async (req, res) => {
 const getAllDrugs = async (req, res) => {
   try {
     const drugs = await Drug.find()
-    res.json(drugs)
+    // return message and drugs
+    res.json({message:'All drugs', drugs:drugs})
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message:"Server Error" })
   }
 }
 
@@ -45,7 +46,7 @@ const getDrugById = async (req, res) => {
     }
     res.json(drug)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: "Server error"})
   }
 }
 
@@ -62,7 +63,7 @@ const updateDrug = async (req, res) => {
     if(expireDate) drug.expireDate = expireDate
     res.json({message: 'Drug updated successfully'})
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: "Server error"})
   }
 }
 
@@ -75,7 +76,7 @@ const deleteDrug = async (req, res) => {
     }
     res.json({ message: 'Drug deleted successfully' })
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: "Server error"})
   }
 }
 
