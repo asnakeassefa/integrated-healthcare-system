@@ -61,6 +61,7 @@ const updateDrug = async (req, res) => {
     }
     if (amount) drug.amount = amount
     if(expireDate) drug.expireDate = expireDate
+    await drug.save()
     res.json({message: 'Drug updated successfully'})
   } catch (error) {
     res.status(500).json({ message: "Server error"})
