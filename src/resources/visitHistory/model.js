@@ -19,16 +19,8 @@ const VisitSchema = new mongoose.Schema({
     type:Array,
     require:true,
   },
-  dosage:{
-    type:String,
-    required:true,
-  },
   otherDrug:{
     type:Array,
-  },
-  pillNumber:{
-    type:Number,
-    required:true,
   },
   visitDate:{
     type:Date,

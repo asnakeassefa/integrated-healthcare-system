@@ -10,7 +10,7 @@ const createVisit = async (req, res) => {
   try {
     const { userId, patientId, drugs, dosage,otherDrug, pillNumber,visitDate,remark,daysBeforeNextVisit,reason,inout,serviceDelivery} = req.body
     // Check if required fields are provided
-    if (!userId || !patientId || !drugs || !pillNumber || !visitDate) {
+    if (!userId || !patientId || !drugs || !visitDate) {
       return res.status(400).json({ message: 'Please provide all required fields.' })
     }
 
