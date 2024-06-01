@@ -10,6 +10,7 @@ router.route('/login').post(userController.login)
 router.route('/getUsers').get(auth,userController.getusers)
 router.route('/veryfyUser').post(auth,userController.verifyUser)
 router.route('/getUnverifiedUsers').get(auth,userController.getUnverifiedUsers)
+router.route('/resetPassword').post(auth,userController.resetPassword)
 // router.route('/addRole').post(userController.addRole)
 
 module.exports = router

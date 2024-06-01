@@ -19,8 +19,6 @@ const auth = async (req, res, next) => {
     }
 
     const token = tokenParts[1]
-    // check if it is valid token
-    console.log(token)
     const decoded = jwt.verify(token, process.env.APP_SECRET)
     req.userId = decoded.userId
     if(decoded.verified == false){

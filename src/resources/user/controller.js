@@ -3,6 +3,7 @@ const User = require('./model')
 const generateTokens = require('../../utils/generateToken')
 const UserRole = require('../role/model')
 const { get } = require('http')
+const { reset } = require('nodemon')
 require('dotenv').config()
 
 const addRole = async (req, res, next) => {
@@ -154,11 +155,40 @@ const getUnverifiedUsers = async (req, res) => {
   }
 }
 
+
+// reset password
+const resetPassword = async (req, res) => {
+  try {
+    const { oldPassword, password } = req.body
+    const user = await User.findOne({ _id: req.userId})
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    // validate password if it is the password is the same as the old password
+    const validPassword = await bcrypt.compare(oldPassword, user.hashedPassword)
+    
+    if (!validPassword) {
+      return res.status(400).json({ message: 'Faild to change password' })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+    user.hashedPassword = hashedPassword
+    await user.save()
+  
+    res.json({ message: 'Password reset successfully' })
+
+  } catch (error) {
+    console.error('Error resetting password:', error)
+    res.status(500).json({ error: 'Failed to reset password' })
+  }
+}
 module.exports = {
   signup,
   login,
   getusers,
   verifyUser,
   getUnverifiedUsers,
+  resetPassword,
   // addRole,
 }
