@@ -14,6 +14,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
   role: {
     type: mongoose.Schema.Types.ObjectId, // corrected 'types' to 'Types'
     ref: 'Role', // corrected 'role' to 'Role'

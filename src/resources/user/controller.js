@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const User = require('./model')
 const generateTokens = require('../../utils/generateToken')
 const UserRole = require('../role/model')
+const { get } = require('http')
 require('dotenv').config()
 
 const addRole = async (req, res, next) => {
@@ -18,11 +19,6 @@ const addRole = async (req, res, next) => {
 
 const signup = async (req, res, next) => {
   try {
-    const userRole = await UserRole.findById(req.Role)
-    if (userRole.name != 'Admin') {
-      console.log(req.Role)
-      return res.status(403).json({ message: 'You are not authorized to add order.' })
-    }
     const { username, name, password, roleName } = req.body
 
     // check if user already exists
@@ -60,11 +56,17 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { username, password } = req.body
+    
     const targetUser = await User.findOne({ username: username }).populate('role').populate('name').populate('username')
     // log(targetUser)
     if (!targetUser) {
       return res.status(404).json({ error: 'User not found' })
     }
+
+    if(targetUser.verified == false){
+      return res.status(401).json({ error: 'User not verified' })
+    }
+
     const validPassword = await bcrypt.compare(password, targetUser.hashedPassword)
     if (!validPassword) {
       return res.status(401).json({ error: 'Invalid password' })
@@ -75,7 +77,6 @@ const login = async (req, res, next) => {
     role = targetUser.role.name
 
     const { accessToken, refreshToken } = await generateTokens(targetUser)
-
     res.status(200).json({ id, targetName,targetUsername, role, accessToken, refreshToken })
   } catch (error) {
     next(error)
@@ -104,9 +105,60 @@ const getusers = async (req, res) => {
   }
 }
 
+// verify users
+const verifyUser = async (req, res) => {
+  try {
+    const userRole = await UserRole.findById(req.Role)
+    if (userRole.name != 'Admin') {
+      console.log(req.Role)
+      return res.status(403).json({ message: 'You are not authorized to verify user.' })
+    }
+    const { id } = req.body
+    const user = await User.findOne({ _id: id })
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    
+    user.verified = true
+    await user.save()
+    res.json({ message: 'User verified successfully' })
+  } catch (error) {
+    console.log('Error verifying user:', error)
+    res.status(500).json({ message: 'Server error' })
+  }
+}
+
+// get users who are not verified
+const getUnverifiedUsers = async (req, res) => {
+  try{
+    const userRole = await UserRole.findById(req.Role)
+    if (userRole.name != 'Admin') {
+      console.log(req.Role)
+      return res.status(403).json({ message: 'You are not authorized to verify user.' })
+    }
+    const users = await User.find({ verified: false })
+
+    // send user without password
+    res.status(200).json({unverifiedUsers: users.map(user => {
+      return {
+        id: user._id,
+        username: user.username,
+        name: user.name,
+        role: user.role.name,
+        verified: user.verified
+      }
+    }) })
+  }catch(error){
+    console.error('Error fetching users:', error)
+    res.status(500).json({ error: 'Failed to fetch users' })
+  }
+}
+
 module.exports = {
   signup,
   login,
   getusers,
+  verifyUser,
+  getUnverifiedUsers,
   // addRole,
 }
