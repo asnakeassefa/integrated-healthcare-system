@@ -23,9 +23,10 @@ const auth = async (req, res, next) => {
     console.log(token)
     const decoded = jwt.verify(token, process.env.APP_SECRET)
     req.userId = decoded.userId
-    req.Role = decoded.Role 
-    console.log(req.userId)
-    console.log(req.Role)
+    if(decoded.verified == false){
+      return res.status(401).json({ message: 'User not verified' })
+    }
+    req.Role = decoded.Role
     next()
   } catch (err) {
     // Handle specific JWT verification errors
