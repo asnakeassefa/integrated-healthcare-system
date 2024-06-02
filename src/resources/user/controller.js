@@ -2,8 +2,6 @@ const bcrypt = require('bcrypt')
 const User = require('./model')
 const generateTokens = require('../../utils/generateToken')
 const UserRole = require('../role/model')
-const { get } = require('http')
-const { reset } = require('nodemon')
 require('dotenv').config()
 
 const addRole = async (req, res, next) => {
