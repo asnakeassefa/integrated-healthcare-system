@@ -13,14 +13,13 @@ const EmergencyPatientSchema = new mongoose.Schema({
     type:String,
     required:true,
   },
-  drug:{
-    type:mongoose.Schema.Types.ObjectId,
-    ref:'Drug',
+  drugs:{
+    type:Array,
     require:true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  visitDate:{
+    type:Date,
+    required:true,
   },
 })
 

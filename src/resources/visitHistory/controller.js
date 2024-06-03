@@ -29,11 +29,15 @@ const createVisit = async (req, res) => {
     if (!drugs) {
       return res.status(404).json({ message: 'Drugs not found.' })
     }
-    // Find the drug by drugId
+    // find sum of the drugs from all the batchs and compare with the amount
     for (let i = 0; i < drugs.length; i++) {
       const drug = await Drug.findById(drugs[i]._id)
-      if(drug.amount < drugs[i].amount){
-        return res.status(404).json({ message: 'Drug not available.' })
+      var drugAmount = 0
+      for(let j=0;j<drug.batch.length;j++){
+        drugAmount += drug.batch[j].quantity
+      }
+      if(drugAmount < drugs[i].amount){
+        return res.status(404).json({ message: "only"+ drugAmount + "is available" })
       }
       if (!drug) {
         return res.status(404).json({ message: 'Drug not found.' })
@@ -75,9 +79,13 @@ const createVisit = async (req, res) => {
         }
       }
       // then update the drug inside the batch
+      var newBatch = []
       drug.batch.forEach((batch) => {
-        if (batch.expireDate === minDate) {
-          batch.quantity -= drugs[i].amount
+        const batchDate = new Date(batch.expireDate)
+        if (batchDate.toString() == minDate.toString()) {
+          newBatch.push({ ...batch, quantity: batch.quantity - drugs[i].amount })
+        } else{
+          newBatch.push(batch)
         }
       })
       const dispenceDrug = new DispencedDrug({
@@ -86,6 +94,7 @@ const createVisit = async (req, res) => {
         date: visitDate,
       })
       await dispenceDrug.save()
+      drug.batch = newBatch
       await drug.save()
     }
     await patient.save()
