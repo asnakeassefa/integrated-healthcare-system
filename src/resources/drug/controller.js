@@ -4,20 +4,36 @@ const DrugDispenced = require('./countModel')
 // Controller to add a new drug
 const addDrug = async (req, res) => {
   try {
-    const { drugName, dose, amount, expireDate } = req.body
+    const { drugName, dose, batch,  manufacturer,country,combination} = req.body
 
     // Check if required fields are provided
-    if ((!drugName || !dose || !amount, !expireDate)) {
+    if ((!drugName || !dose || !batch || !manufacturer || !country)) {
       return res.status(400).json({ message: 'Please provide all required fields.' })
     }
 
     // check if drug already exists
     const drugExists = await Drug.findOne({ drugName })
-    if (drugExists) {
-      return res.status(400).json({ message: 'Drug already exists' })
+
+    // check the date is valid for batch expire date
+    if (batch.length > 0) {
+      batch.forEach((batch) => {
+        if (!batch.batchNumber || !batch.expireDate || !batch.quantity) {
+          return res.status(400).json({ message: 'Batch has to contain batch number, expiry date and quantity' })
+        } else {
+          const expiryDate = new Date(batch.expireDate)
+          if (isNaN(expiryDate.getTime())) {
+            return res.status(400).json({ message: 'Invalid date format' })
+          } else if (expiryDate.getTime() < Date.now()) {
+            return res.status(400).json({ message: 'Expiry date cannot be in the past' })
+          }
+        }
+      }
+      )
+    }else{
+      return res.status(400).json({ message: 'Batch has to contain batch number, expiry date and quantity' })
     }
 
-    const newDrug = new Drug({ drugName, dose, amount, expireDate })
+    const newDrug = new Drug({ drugName, dose, batch, manufacturer,country,combination })
     await newDrug.save()
     res.status(201).json(newDrug)
   } catch (error) {
@@ -52,14 +68,15 @@ const getDrugById = async (req, res) => {
 
 const updateDrug = async (req, res) => {
   const { id } = req.params
-  const { amount, expireDate } = req.body
+  const { amount,manufacturer,country } = req.body
   try {
     const drug = await Drug.findOne({ _id: id })
     if (!drug) {
       return res.status(404).json({ message: 'Drug not found' })
     }
     if (amount) drug.amount = amount
-    if (expireDate) drug.expireDate = expireDate
+    if (manufacturer) drug.manufacturer = manufacturer
+    if (country) drug.country = country
     await drug.save()
     res.json({ message: 'Drug updated successfully' })
   } catch (error) {
@@ -79,6 +96,25 @@ const deleteDrug = async (req, res) => {
     res.status(500).json({ message: 'Server error' })
   }
 }
+// remove by batch number
+const removeByBatch = async (req, res) => {
+  const { drugId,batchNumber } = req.body
+  try {
+    const drug = await Drug.findOne({ _id: drugId })
+    if (!drug) {
+      return res.status(404).json({ message: 'Drug not found' })
+    }
+
+    const newBatch = drug.batch.filter((batch) => batch.batchNumber !== batchNumber)
+    drug.batch = newBatch
+    await drug.save()
+    res.json({ message: 'Batch deleted successfully' })
+    
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' })
+  }
+}
+
 
 // controller to get drugs that are about to expire
 
@@ -88,14 +124,17 @@ const upcomingExpireDate = async (req, res) => {
     const drugs = await Drug.find()
     const today = new Date()
     const upcomingExpireDate = drugs.filter((drug) => {
-      const expireDate = new Date(drug.expireDate)
-      const timeDiff = expireDate.getTime() - today.getTime()
-      const daysDiff = timeDiff / (1000 * 3600 * 24)
-      return daysDiff <= days
+      const batch = drug.batch.find((batch) => {
+        const expiryDate = new Date(batch.expireDate) // Convert expiryDate to a Date object
+        const timeDiff = expiryDate.getTime() - today.getTime()
+        const daysDiff = timeDiff / (1000 * 3600 * 24)
+        return daysDiff <= days
+      })
+      return batch
     })
-    res.json(upcomingExpireDate)
+    res.json( {drugs: upcomingExpireDate})
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    res.status(500).json({ message: "Server error"})
   }
 }
 
@@ -229,6 +268,7 @@ module.exports = {
   getAllDrugs,
   getDrugById,
   deleteDrug,
+  removeByBatch,
   updateDrug,
   upcomingExpireDate,
   getDispencedDrugCount,

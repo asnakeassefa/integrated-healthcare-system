@@ -1,6 +1,6 @@
 const Patient = require('./model').Patient
 const LastVisit = require('../visit/model')
-const patientCount = require('./model').PatientCountModel
+const PatientCount = require('./model').PatientCountModel
 // register patient
 const registerPatient = async (req, res) => {
   try {
@@ -36,7 +36,11 @@ const registerPatient = async (req, res) => {
     }
 
     if (!atrNumber) {
-      var pCount = await patientCount.findOne({ name: 'PatientCount' })
+      var pCount = await PatientCount.findOne({ name: 'PatientCount' })
+      if (!pCount) {
+        pCount = new PatientCount({ userCount: 0 })
+        await pCount.save()
+      }
       atrNumber = 'T' + (1 + pCount.userCount).toString()
     }
     // Create a new user
@@ -68,7 +72,7 @@ const registerPatient = async (req, res) => {
 
     // Save the user to the database
     await newUser.save()
-    var pCount = await patientCount.findOne({ name: 'PatientCount' })
+    var pCount = await PatientCount.findOne({ name: 'PatientCount' })
     pCount.userCount += 1
     await pCount.save()
     res.status(201).json({ message: 'User registered successfully', user: newUser })

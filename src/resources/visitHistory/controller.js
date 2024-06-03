@@ -62,7 +62,24 @@ const createVisit = async (req, res) => {
     patient.nextAppointmentDate = nextVisitDate
     for (let i = 0; i < drugs.length; i++) {
       const drug = await Drug.findById(drugs[i]._id)
-      drug.amount -= drugs[i].amount
+      if(!drug){
+        return res.status(404).json({ message: 'Drug not found.' })
+      }
+      // get least expiry date from the bach and update the drug
+      const batch = drug.batch
+      let minDate = new Date(batch[0].expireDate)
+      for (let j = 1; j < batch.length; j++) {
+        const date = new Date(batch[j].expireDate)
+        if (date < minDate) {
+          minDate = date
+        }
+      }
+      // then update the drug inside the batch
+      drug.batch.forEach((batch) => {
+        if (batch.expireDate === minDate) {
+          batch.quantity -= drugs[i].amount
+        }
+      })
       const dispenceDrug = new DispencedDrug({
         drugName: drug.drugName,
         amount: drugs[i].amount,
