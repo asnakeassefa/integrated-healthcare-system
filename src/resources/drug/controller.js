@@ -4,10 +4,10 @@ const DrugDispenced = require('./countModel')
 // Controller to add a new drug
 const addDrug = async (req, res) => {
   try {
-    const { drugName, dose, batch,  manufacturer,country,combination} = req.body
+    const { drugName, batch,  manufacturer,country,combination} = req.body
 
     // Check if required fields are provided
-    if ((!drugName || !dose || !batch || !manufacturer || !country)) {
+    if ((!drugName || !batch || !manufacturer || !country)) {
       return res.status(400).json({ message: 'Please provide all required fields.' })
     }
 

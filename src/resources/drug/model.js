@@ -9,10 +9,6 @@ const DrugSchema = new mongoose.Schema({
     unique:true,
     required:true,
   },
-  dose: {
-    type:Number,
-    required:true,
-  },
   batch: {
     type:Array,
     required:true,
