@@ -17,4 +17,5 @@ router.route('/getTotalDrugDispenced').get(drugController.getTotalDispencedDrugC
 router.route('/getTotalDrugDispencedByName').get(drugController.getTotalDispenceByName)
 router.route('/getDrugDispencedByDays/:days').get(drugController.getDrugsDispenced)
 router.route('/getDrugDispencedByName/:days').get(drugController.getDrugsDispencedByName)
+router.route('/refillDrug').post(drugController.refillDrug)
 module.exports = router

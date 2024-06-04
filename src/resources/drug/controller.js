@@ -4,10 +4,10 @@ const DrugDispenced = require('./countModel')
 // Controller to add a new drug
 const addDrug = async (req, res) => {
   try {
-    const { drugName, batch,  manufacturer,country,combination} = req.body
+    const { drugName, manufacturer,country,combination} = req.body
 
     // Check if required fields are provided
-    if ((!drugName || !batch || !manufacturer || !country)) {
+    if ((!drugName || !manufacturer || !country)) {
       return res.status(400).json({ message: 'Please provide all required fields.' })
     }
 
@@ -15,25 +15,25 @@ const addDrug = async (req, res) => {
     const drugExists = await Drug.findOne({ drugName })
 
     // check the date is valid for batch expire date
-    if (batch.length > 0) {
-      batch.forEach((batch) => {
-        if (!batch.batchNumber || !batch.expireDate || !batch.quantity) {
-          return res.status(400).json({ message: 'Batch has to contain batch number, expiry date and quantity' })
-        } else {
-          const expiryDate = new Date(batch.expireDate)
-          if (isNaN(expiryDate.getTime())) {
-            return res.status(400).json({ message: 'Invalid date format' })
-          } else if (expiryDate.getTime() < Date.now()) {
-            return res.status(400).json({ message: 'Expiry date cannot be in the past' })
-          }
-        }
-      }
-      )
-    }else{
-      return res.status(400).json({ message: 'Batch has to contain batch number, expiry date and quantity' })
-    }
+    // if (batch.length > 0) {
+    //   batch.forEach((batch) => {
+    //     if (!batch.batchNumber || !batch.expireDate || !batch.quantity) {
+    //       return res.status(400).json({ message: 'Batch has to contain batch number, expiry date and quantity' })
+    //     } else {
+    //       const expiryDate = new Date(batch.expireDate)
+    //       if (isNaN(expiryDate.getTime())) {
+    //         return res.status(400).json({ message: 'Invalid date format' })
+    //       } else if (expiryDate.getTime() < Date.now()) {
+    //         return res.status(400).json({ message: 'Expiry date cannot be in the past' })
+    //       }
+    //     }
+    //   }
+    //   )
+    // }else{
+    //   return res.status(400).json({ message: 'Batch has to contain batch number, expiry date and quantity' })
+    // }
 
-    const newDrug = new Drug({ drugName, dose, batch, manufacturer,country,combination })
+    const newDrug = new Drug({ drugName, manufacturer,country,combination })
     await newDrug.save()
     res.status(201).json(newDrug)
   } catch (error) {
@@ -263,6 +263,42 @@ const getDrugsDispencedByName = async (req, res) => {
 }
 
 
+const refillDrug = async (req, res) => {
+  try {
+    const { drugId, batch} = req.body
+    const drug = await Drug.findOne({ _id: drugId })
+    if (!drug) {
+      return res.status(404).json({ message: 'Drug not found' })
+    }
+    // if the batch number is already in the drug, return error
+
+    const batchExists = drug.batch.find((b) => b.batchNumber === batch.batchNumber)
+    if (batchExists) {
+      return res.status(400).json({ message: 'Batch number already exists' })
+    }
+
+    // check the date is valid for batch expire date
+    if (!batch.batchNumber || !batch.expireDate || !batch.quantity) {
+      return res.status(400).json({ message: 'Batch has to contain batch number, expiry date and quantity' })
+    } else {
+      const expiryDate = new Date(batch.expireDate)
+      if (isNaN(expiryDate.getTime())) {
+        return res.status(400).json({ message: 'Invalid date format' })
+      } else if (expiryDate.getTime() < Date.now()) {
+        return res.status(400).json({ message: 'Expiry date cannot be in the past' })
+      }
+    }
+
+    drug.batch.push(batch)
+    await drug.save()
+    res.json({ message: 'Drug refilled successfully' })
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' })
+  }
+
+}
+
+
 module.exports = {
   addDrug,
   getAllDrugs,
@@ -275,5 +311,6 @@ module.exports = {
   getTotalDispencedDrugCount,
   getTotalDispenceByName,
   getDrugsDispenced,
-  getDrugsDispencedByName
+  getDrugsDispencedByName,
+  refillDrug
 }
