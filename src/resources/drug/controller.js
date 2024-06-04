@@ -13,7 +13,9 @@ const addDrug = async (req, res) => {
 
     // check if drug already exists
     const drugExists = await Drug.findOne({ drugName })
-
+    if(drugExists){
+      return res.status(400).json({ message: 'Drug already exists' })
+    }
     // check the date is valid for batch expire date
     // if (batch.length > 0) {
     //   batch.forEach((batch) => {
