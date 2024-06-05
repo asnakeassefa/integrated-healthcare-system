@@ -261,7 +261,10 @@ const resetPassword = async (req, res) => {
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
     const { userId } = req.body
-    const user = await User.findOne({ _id: userId })
+    const user = await User.findOne({ _id: userId }).populate('role')
+    if (user.role.name == 'SuperAdmin'){
+      return res.status(403).json({ message: 'You are not authorized to update super admin' })
+    }
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
     }
