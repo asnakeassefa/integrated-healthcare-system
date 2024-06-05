@@ -129,16 +129,28 @@ const verifyUser = async (req, res) => {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
-    const { userId } = req.body
+    const { userId, role} = req.body
     if (!userId) {
       return res.status(404).json({ message: 'User not found' })
     }
-    const user = await User.findOne({ _id: id })
+
+    if (!role) {
+      return res.status(404).json({ message: 'Role is required' })
+    }
+
+    const newRole = await UserRole.findOne({ name: role })
+
+    if (!newRole) {
+      return res.status(404).json({ message: 'Role not found' })
+    }
+
+    const user = await User.findOne({ _id: userId })
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
     }
     
     user.verified = true
+    user.role = newRole
     await user.save()
     res.json({ message: 'User verified successfully' })
   } catch (error) {
