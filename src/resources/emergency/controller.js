@@ -97,8 +97,11 @@ const registerEmergencyPatient = async (req, res) => {
 const getAllEmergencyPatients = async (req, res) => {
   try {
     // Fetch all patients from the database and add lastvisit date
+    
     const emergency = await EmergencyPatient.find()
-    .populate('user')
+    // only populate user name
+    .populate('user','name')
+    // const user = new User.findById(emergency.user)
     res.status(200).json({ emergency })
   } catch (error) {
     console.error('Error fetching patients:', error)
