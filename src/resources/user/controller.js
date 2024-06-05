@@ -6,8 +6,11 @@ require('dotenv').config()
 
 const addRole = async (req, res, next) => {
   try {
+    // if(req.Role != 'Admin'){
+    //   return res.status(403).json({ message: 'You are not authorized to add role.' })
+    // }
     const { name } = req.body
-    const newRole = new Role({ name })
+    const newRole = new UserRole({ name })
     await newRole.save()
     res.status(201).json(newRole)
   } catch (error) {
@@ -25,7 +28,9 @@ const signup = async (req, res, next) => {
     if (existingUser) {
       return res.status(409).json({ error: 'User already exists' })
     }
-
+    if(roleName == 'SuperAdmin'){
+      return res.status(403).json({ error: "You are not allowed to create super admin" })
+    }
     const role = await UserRole.findOne({ name: roleName })
     if (!role) {
       return res.status(404).json({ error: 'Role not found' })
@@ -89,15 +94,18 @@ const getusers = async (req, res) => {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to add order.' })
     }
-    const users = await User.find().populate('role')
-    const usersList = users.map((user) => {
+    const users = await User.find({verified:true}).populate('role')
+    // return all verified users is true
+    const usersList = users.map(user => {
       return {
         id: user._id,
+        username: user.username,
         name: user.name,
         role: user.role.name,
       }
     })
-    res.status(200).json(usersList)
+
+    res.status(200).json({message:"All Verified users", users: usersList })
   } catch (error) {
     console.error('Error fetching users:', error)
     res.status(500).json({ error: 'Failed to fetch users' })
@@ -155,7 +163,7 @@ const getUnverifiedUsers = async (req, res) => {
 
 
 // reset password
-const resetPassword = async (req, res) => {
+const changePassword = async (req, res) => {
   try {
     const { oldPassword, password } = req.body
     const user = await User.findOne({ _id: req.userId})
@@ -181,12 +189,102 @@ const resetPassword = async (req, res) => {
     res.status(500).json({ error: 'Failed to reset password' })
   }
 }
+
+const updateUserInfo = async (req, res) => {
+  try {
+    const userRole = await UserRole.findById(req.Role)
+    if (userRole.name != 'Admin' && userRole.name != 'SuperAdmin') {
+      return res.status(403).json({ message: 'You are not authorized to update user.' })
+    }
+    const { userId,role} = req.body
+    const user = await User.findOne({ _id: userId }).populate('role')
+    if(role == 'SuperAdmin'){
+      return res.status(403).json({ message: 'Only one super admin is allowed' })
+    }
+    
+    if (user.role.name == 'SuperAdmin'){
+      return res.status(403).json({ message: 'You are not authorized to update super admin' })
+    }
+    if(user.role.name != "Staff" && userRole.name != 'SuperAdmin'){
+      return res.status(403).json({ message: 'You are not authorized to update admin' })
+    }
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+
+    var newRole = await UserRole.findOne({ name: role })
+    if(!newRole){
+      return res.status(404).json({ message: 'Role not found' })
+    }
+
+    user.role = newRole
+    await user.save();
+    res.json({ message: 'User updated successfully' })
+  } catch (error) {
+    console.error('Error updating user:', error)
+    res.status(500).json({ error: 'Failed to update user' })
+  }
+}
+
+const unverifiedUsers = async (req, res) => {
+  try {
+    const userRole = await UserRole.findById(req.Role)
+    if (userRole.name != 'Admin' &&  userRole.name != 'SuperAdmin') {
+      console.log(req.Role)
+      return res.status(403).json({ message: 'You are not authorized to verify user.' })
+    }
+    const {userId} = req.body;
+    
+    // update user verifcation status to false
+    const user = await User.findOne({ _id: userId }).populate('role')
+
+    if(user.role.name != "Staff" && userRole.name != 'SuperAdmin'){
+      return res.status(403).json({ message: 'You are not authorized to update admin' })
+    }
+    if(!user){
+      return res.status(404).json({ message: 'User not found' })
+    }
+    user.verified = false
+    await user.save()
+    res.json({ message: 'User unverified successfully' })
+  }catch(error){
+    console.error('Error fetching users:', error)
+    res.status(500).json({ error: 'Failed to fetch users' })
+  }
+}
+
+const resetPassword = async (req, res) => {
+  try {
+    const userRole = await UserRole.findById(req.Role)
+    if (userRole.name != 'Admin' &&  userRole.name != 'SuperAdmin') {
+      console.log(req.Role)
+      return res.status(403).json({ message: 'You are not authorized to verify user.' })
+    }
+    const { userId } = req.body
+    const user = await User.findOne({ _id: userId })
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' })
+    }
+    const hashedPassword = await bcrypt.hash('password', 10)
+    user.hashedPassword = hashedPassword
+    await user.save()
+    res.json({ message: 'Password reseted successfully' })
+  }
+  catch (error) {
+    console.error('Error resetting password:', error)
+    res.status(500).json({ error: 'Failed to reset password' })
+  } 
+}
+
 module.exports = {
   signup,
   login,
   getusers,
   verifyUser,
   getUnverifiedUsers,
+  changePassword,
+  updateUserInfo,
+  unverifiedUsers,
   resetPassword,
   // addRole,
 }
