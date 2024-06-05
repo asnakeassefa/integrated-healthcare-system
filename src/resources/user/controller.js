@@ -90,7 +90,7 @@ const login = async (req, res, next) => {
 const getusers = async (req, res) => {
   try {
     const userRole = await UserRole.findById(req.Role)
-    if (userRole.name != 'Admin') {
+    if (userRole.name != 'Admin' && userRole.name != 'SuperAdmin') {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to add order.' })
     }
@@ -277,6 +277,33 @@ const resetPassword = async (req, res) => {
     console.error('Error resetting password:', error)
     res.status(500).json({ error: 'Failed to reset password' })
   } 
+}
+
+// reject verification
+
+const rejectUser = async (req, res) => {
+
+  try{
+    const userRole = await UserRole.findById(req.Role)
+    if (userRole.name != 'Admin' &&  userRole.name != 'SuperAdmin') {
+      console.log(req.Role)
+      return res.status(403).json({ message: 'You are not authorized to verify user.' })
+    }
+    const {userId} = req.body;
+    const user = await User.findOne({ _id: userId }).populate('role')
+    if(user.role.name != "Staff" && userRole.name != 'SuperAdmin'){
+      return res.status(403).json({ message: 'You are not authorized to update admin' })
+    }
+    if(!user){
+      return res.status(404).json({ message: 'User not found' })
+    }
+    user.verified = false
+    await user.save()
+    res.json({ message: 'User unverified successfully' })
+  } catch(error){
+    res.status(500).json({ error: 'Failed to fetch users' })
+  }
+
 }
 
 module.exports = {
