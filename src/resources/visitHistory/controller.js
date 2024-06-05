@@ -8,14 +8,15 @@ const DispencedDrug = require('../drug/countModel')
 // Controller function to create a visit history
 const createVisit = async (req, res) => {
   try {
-    const { userId, patientId, drugs, dosage,otherDrug, pillNumber,visitDate,remark,daysBeforeNextVisit,reason,inout,serviceDelivery} = req.body
+    const { patientId, drugs, dosage,otherDrug, pillNumber,visitDate,remark,daysBeforeNextVisit,reason,inout,serviceDelivery} = req.body
     // Check if required fields are provided
-    if (!userId || !patientId || !drugs || !visitDate) {
+    if (!patientId || !drugs || !visitDate) {
       return res.status(400).json({ message: 'Please provide all required fields.' })
     }
 
     // Find the user by userId
-    const user = await User.findById(userId)
+
+    const user = await User.findById(req.userId)
     if (!user) {
       return res.status(404).json({ message: 'User not found.' })
     }
@@ -32,6 +33,9 @@ const createVisit = async (req, res) => {
     // find sum of the drugs from all the batchs and compare with the amount
     for (let i = 0; i < drugs.length; i++) {
       const drug = await Drug.findById(drugs[i]._id)
+      if(!drug.batch || drug.batch.length == 0){
+        return res.status(404).json({ message: 'drug is not available' })
+      }
       var drugAmount = 0
       for(let j=0;j<drug.batch.length;j++){
         drugAmount += drug.batch[j].quantity
@@ -70,11 +74,17 @@ const createVisit = async (req, res) => {
         return res.status(404).json({ message: 'Drug not found.' })
       }
       // get least expiry date from the bach and update the drug
+      if(!drug.batch || drug.batch.length == 0){
+        return res.status(404).json({ message: 'drug is not available' })
+      }
       const batch = drug.batch
+      if (batch.length == 0) {
+        return res.status(404).json({ message: 'drug is not available' })
+      }
       let minDate = new Date(batch[0].expireDate)
       for (let j = 1; j < batch.length; j++) {
         const date = new Date(batch[j].expireDate)
-        if (date < minDate) {
+        if (date < minDate && batch[j].quantity > drugs[i].amount) {
           minDate = date
         }
       }
@@ -83,6 +93,9 @@ const createVisit = async (req, res) => {
       drug.batch.forEach((batch) => {
         const batchDate = new Date(batch.expireDate)
         if (batchDate.toString() == minDate.toString()) {
+          if(batch.quantity < drugs[i].amount){
+            return res.status(404).json({ message: 'drug is not available' })
+          }
           newBatch.push({ ...batch, quantity: batch.quantity - drugs[i].amount })
         } else{
           newBatch.push(batch)

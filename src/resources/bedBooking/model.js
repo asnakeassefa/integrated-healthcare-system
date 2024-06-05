@@ -1,6 +1,11 @@
 const mongoose = require('mongoose')
 // Define the Staff Schema
 const BookBedSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   patient: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Patient',

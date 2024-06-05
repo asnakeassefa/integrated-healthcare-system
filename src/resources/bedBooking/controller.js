@@ -15,9 +15,9 @@ const bookBed = async (req, res) => {
     if (isBooked) {
       return res.status(409).json({ message: 'Bed is already booked' });
     }
-
+    const user = await User.findById(req.userId);
     // Create a new booking
-    const newBooking = new BookBed({ patient: patientId, bed: bedId });
+    const newBooking = new BookBed({ user:user._id, patient: patientId, bed: bedId });
     await newBooking.save();
 
     res.status(201).json({ message: 'Bed booked successfully' });
@@ -30,6 +30,7 @@ const bookBed = async (req, res) => {
 const getAllBookedBeds = async (req, res) => {
   try {
     const bookedBeds = await BookBed.find()
+      .populate('user') // Populate user details
       .populate('patient') // Populate patient details with strictPopulate set to false
       .populate('bed'); // Populate bed details for room and number
     res.status(200).json(bookedBeds);

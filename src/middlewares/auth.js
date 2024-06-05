@@ -21,6 +21,7 @@ const auth = async (req, res, next) => {
     const token = tokenParts[1]
     const decoded = jwt.verify(token, process.env.APP_SECRET)
     req.userId = decoded.userId
+
     if(decoded.verified == false){
       return res.status(401).json({ message: 'User not verified' })
     }

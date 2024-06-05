@@ -1,6 +1,7 @@
 const EmergencyPatient = require('./model')
 const Drug = require('../drug/model')
 const DispencedDrug = require('../drug/countModel')
+const User = require('../user/model')
 // register patient
 const registerEmergencyPatient = async (req, res) => {
   try {
@@ -12,7 +13,14 @@ const registerEmergencyPatient = async (req, res) => {
       drugs,
     } = req.body
 
-
+    if (!fullName || !patientRegularHospital || !cardNumber || !visitDate || !drugs) {
+      return res.status(400).json({ message: 'All fields are required' })
+    }
+    // Find the user by userId
+    const user = await User.findOne({ _id: req.userId })
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' })
+    }
     // Find the drug by drugId
     for (let i = 0; i < drugs.length; i++) {
       const drug = await Drug.findById(drugs[i]._id)
@@ -29,6 +37,7 @@ const registerEmergencyPatient = async (req, res) => {
     }
     // Create a new user
     const newPatient = new EmergencyPatient({
+      user: user._id,
       fullName,
       patientRegularHospital,
       cardNumber,
@@ -43,6 +52,10 @@ const registerEmergencyPatient = async (req, res) => {
       }
       // get least expiry date from the bach and update the drug
       const batch = drug.batch
+      if (batch.length == 0) {
+        return res.status(404).json({ message: 'drug is not available' })
+      }
+
       let minDate = new Date(batch[0].expireDate)
       for (let j = 1; j < batch.length; j++) {
         const date = new Date(batch[j].expireDate)
