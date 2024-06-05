@@ -290,16 +290,15 @@ const rejectUser = async (req, res) => {
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
     const {userId} = req.body;
-    const user = await User.findOne({ _id: userId }).populate('role')
-    if(user.role.name != "Staff" && userRole.name != 'SuperAdmin'){
-      return res.status(403).json({ message: 'You are not authorized to update admin' })
-    }
-    if(!user){
-      return res.status(404).json({ message: 'User not found' })
-    }
-    user.verified = false
+    const user = await User.findOne({ _id: userId })
+
+    if (user.verified == true){
+      return res.status(403).json({ message: 'User already verified' })
+    } 
+
+    await user.delete()
     await user.save()
-    res.json({ message: 'User unverified successfully' })
+    res.json({ message: 'User rejected successfully' })
   } catch(error){
     res.status(500).json({ error: 'Failed to fetch users' })
   }
@@ -316,5 +315,6 @@ module.exports = {
   updateUserInfo,
   unverifiedUsers,
   resetPassword,
+  rejectUser,
   // addRole,
 }

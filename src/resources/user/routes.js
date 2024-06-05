@@ -14,6 +14,7 @@ router.route('/changePassword').post(auth,userController.changePassword)
 router.route('/updateUserInfo').put(auth,userController.updateUserInfo)
 router.route('/unVerifyUser').post(auth,userController.unverifiedUsers)
 router.route('/resetPassword').post(auth,userController.resetPassword)
+router.route('/rejectUser').post(auth,userController.rejectUser)
 // router.route('/addRole').post(userController.addRole)
 
 module.exports = router
