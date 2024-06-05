@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const User = require('./model')
 const generateTokens = require('../../utils/generateToken')
 const UserRole = require('../role/model')
+const { log } = require('console')
 require('dotenv').config()
 
 const addRole = async (req, res, next) => {
@@ -24,6 +25,9 @@ const signup = async (req, res, next) => {
     const { username, name, password, roleName } = req.body
 
     // check if user already exists
+    if(!username || !name || !password || !roleName){
+      return res.status(404).json({ error: 'please provide all the required fields' })
+    }
     const existingUser = await User.findOne({ username: username })
     if (existingUser) {
       return res.status(409).json({ error: 'User already exists' })
@@ -61,8 +65,13 @@ const login = async (req, res, next) => {
   try {
     const { username, password } = req.body
     
+    if(!username || !password){
+      return res.status(404).json({ error: 'please provide all the required fields' })
+    }
     const targetUser = await User.findOne({ username: username }).populate('role').populate('name').populate('username')
     // log(targetUser)
+
+
     if (!targetUser) {
       return res.status(404).json({ error: 'User not found' })
     }
@@ -120,7 +129,10 @@ const verifyUser = async (req, res) => {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
-    const { id } = req.body
+    const { userId } = req.body
+    if (!userId) {
+      return res.status(404).json({ message: 'User not found' })
+    }
     const user = await User.findOne({ _id: id })
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
@@ -171,6 +183,9 @@ const changePassword = async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
 
+    if(!oldPassword || !password){
+      return res.status(404).json({ message: 'please provide all the required fields' })
+    }
     // validate password if it is the password is the same as the old password
     const validPassword = await bcrypt.compare(oldPassword, user.hashedPassword)
     
@@ -197,6 +212,9 @@ const updateUserInfo = async (req, res) => {
       return res.status(403).json({ message: 'You are not authorized to update user.' })
     }
     const { userId,role} = req.body
+    if(!userId || !role){
+      return res.status(404).json({ message: 'please provide all the required fields' })
+    }
     const user = await User.findOne({ _id: userId }).populate('role')
     if(role == 'SuperAdmin'){
       return res.status(403).json({ message: 'Only one super admin is allowed' })
@@ -234,7 +252,9 @@ const unverifiedUsers = async (req, res) => {
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
     const {userId} = req.body;
-    
+    if(!userId){
+      return res.status(404).json({ message: 'User not found' })
+    }
     // update user verifcation status to false
     const user = await User.findOne({ _id: userId }).populate('role')
 
@@ -261,6 +281,9 @@ const resetPassword = async (req, res) => {
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
     const { userId } = req.body
+    if (!userId) {
+      return res.status(404).json({ message: 'User not found' })
+    }
     const user = await User.findOne({ _id: userId }).populate('role')
     if (user.role.name == 'SuperAdmin'){
       return res.status(403).json({ message: 'You are not authorized to update super admin' })
@@ -290,16 +313,22 @@ const rejectUser = async (req, res) => {
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
     const {userId} = req.body;
+    if(!userId){
+      return res.status(404).json({ message: 'User not found' })
+    }
     const user = await User.findOne({ _id: userId })
-
+    if(!user){
+      return res.status(404).json({ message: 'User not found' })
+    }
     if (user.verified == true){
       return res.status(403).json({ message: 'User already verified' })
     } 
 
-    await user.delete()
-    await user.save()
+    // delete user
+    await User.findByIdAndDelete(userId)
     res.json({ message: 'User rejected successfully' })
   } catch(error){
+    console.error('Error fetching users:', error)
     res.status(500).json({ error: 'Failed to fetch users' })
   }
 
