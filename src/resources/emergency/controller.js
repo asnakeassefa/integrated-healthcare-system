@@ -84,6 +84,7 @@ const registerEmergencyPatient = async (req, res) => {
     }
     // Save the user to the database
     await newPatient.save()
+    
     res.status(201).json({ message: 'Emergency request completed', user: newPatient })
   } catch (error) {
     console.error('Error registering Patient:', error)
@@ -97,7 +98,7 @@ const getAllEmergencyPatients = async (req, res) => {
   try {
     // Fetch all patients from the database and add lastvisit date
     const emergency = await EmergencyPatient.find()
-
+    .populate('user')
     res.status(200).json({ emergency })
   } catch (error) {
     console.error('Error fetching patients:', error)
