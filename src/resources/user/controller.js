@@ -116,7 +116,7 @@ const getusers = async (req, res) => {
 const verifyUser = async (req, res) => {
   try {
     const userRole = await UserRole.findById(req.Role)
-    if (userRole.name != 'Admin') {
+    if (userRole.name != 'Admin' && userRole.name != 'SuperAdmin') {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
@@ -139,7 +139,7 @@ const verifyUser = async (req, res) => {
 const getUnverifiedUsers = async (req, res) => {
   try{
     const userRole = await UserRole.findById(req.Role)
-    if (userRole.name != 'Admin') {
+    if (userRole.name != 'Admin' && userRole.name != 'SuperAdmin') {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
