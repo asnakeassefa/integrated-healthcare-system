@@ -66,23 +66,23 @@ const login = async (req, res, next) => {
     const { username, password } = req.body
     
     if(!username || !password){
-      return res.status(404).json({ error: 'please provide all the required fields' })
+      return res.status(404).json({ message: 'please provide all the required fields' })
     }
     const targetUser = await User.findOne({ username: username }).populate('role').populate('name').populate('username')
     // log(targetUser)
 
 
     if (!targetUser) {
-      return res.status(404).json({ error: 'User not found' })
+      return res.status(404).json({ message: 'Invalid Credentials' })
     }
 
     if(targetUser.verified == false){
-      return res.status(401).json({ error: 'User not verified' })
+      return res.status(401).json({ message: 'Invalid Credentials' })
     }
 
     const validPassword = await bcrypt.compare(password, targetUser.hashedPassword)
     if (!validPassword) {
-      return res.status(401).json({ error: 'Invalid password' })
+      return res.status(401).json({ message: 'Invalid Credentials' })
     }
     targetName = targetUser.name
     const targetUsername = targetUser.username
@@ -92,7 +92,7 @@ const login = async (req, res, next) => {
     const { accessToken, refreshToken } = await generateTokens(targetUser)
     res.status(200).json({ id, targetName,targetUsername, role, accessToken, refreshToken })
   } catch (error) {
-    next(error)
+    res.status(500).json({ message: 'Failed to login' })
   }
 }
 
