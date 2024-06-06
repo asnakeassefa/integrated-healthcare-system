@@ -77,12 +77,12 @@ const login = async (req, res, next) => {
     }
 
     if(targetUser.verified == false){
-      return res.status(401).json({ message: 'Invalid Credentials' })
+      return res.status(404).json({ message: 'Invalid Credentials' })
     }
 
     const validPassword = await bcrypt.compare(password, targetUser.hashedPassword)
     if (!validPassword) {
-      return res.status(401).json({ message: 'Invalid Credentials' })
+      return res.status(404).json({ message: 'Invalid Credentials' })
     }
     targetName = targetUser.name
     const targetUsername = targetUser.username
