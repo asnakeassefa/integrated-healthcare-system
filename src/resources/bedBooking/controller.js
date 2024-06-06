@@ -2,6 +2,7 @@ const express = require('express')
 
 const Bed = require('../bed/model');
 const BookBed = require('./model');
+const User = require('../user/model');
 // Get all booked beds (including patient information)
 const bookBed = async (req, res) => {
   const { patientId, bedId } = req.body; // Expect patient ID and bed ID in request body
@@ -107,10 +108,26 @@ const freeRoom = async (req, res) => {
   }
 };
 
+
+// list of beds which is not in bookedBeds
+const getUnoccupiedBeds = async (req, res) => {
+  try {
+    const bookedBeds = await BookBed.find();
+    // free bed means bed is not booked
+    const bookedBedIds = bookedBeds.map((booking) => booking.bed);
+    const unoccupiedBeds = await Bed.find({ _id: { $nin: bookedBedIds } });
+    res.status(200).json({unoccupiedBeds: unoccupiedBeds});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching unoccupied beds' });
+  }
+};
+
 module.exports = {
     bookBed,
     getAllBookedBeds,
     getPatientBed,
     freeBed,
     freeRoom,
+    getUnoccupiedBeds
 }
