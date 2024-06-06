@@ -34,7 +34,7 @@ const getAllBookedBeds = async (req, res) => {
       .populate('user') // Populate user details
       .populate('patient') // Populate patient details with strictPopulate set to false
       .populate('bed'); // Populate bed details for room and number
-    res.status(200).json(bookedBeds);
+    res.status(200).json({bookedBeds: bookedBeds});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching booked beds' });
