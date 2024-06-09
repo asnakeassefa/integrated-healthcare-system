@@ -41,7 +41,7 @@ const createVisit = async (req, res) => {
         drugAmount += drug.batch[j].quantity
       }
       if(drugAmount < drugs[i].amount){
-        return res.status(404).json({ message: "only"+ drugAmount + "is available" })
+        return res.status(404).json({ message: "only"+ drugAmount + "drugs is available" })
       }
       if (!drug) {
         return res.status(404).json({ message: 'Drug not found.' })
@@ -49,6 +49,10 @@ const createVisit = async (req, res) => {
     }
     const today = new Date(visitDate)
     const nextVisitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + parseInt(daysBeforeNextVisit))
+    var ontime = true
+    if(patient.visitDate && patient.nextAppointmentDate.toString() != today.toString()){
+      ontime = false
+    }
 
     const visit = new Visit({
       user: user._id,
@@ -62,10 +66,15 @@ const createVisit = async (req, res) => {
       remarks: remark,
       reason: reason,
       inout: inout,
+      onTime: ontime,
       serviceDelivery: serviceDelivery,
     })
-
-    patient.visitDate = visitDate
+    console.log(patient.visitDate.toString == today.toString)
+    if(patient.visitDate && patient.visitDate.toString() != today.toString()){
+      patient.visitDate = visitDate
+    }else if(patient.visitDate && patient.visitDate.toString() == today.toString()){
+      return res.status(404).json({ message: 'Patient already visited' })
+    }
 
     patient.nextAppointmentDate = nextVisitDate
     for (let i = 0; i < drugs.length; i++) {
@@ -79,6 +88,9 @@ const createVisit = async (req, res) => {
       }
       const batch = drug.batch
       if (batch.length == 0) {
+        return res.status(404).json({ message: 'drug is not available' })
+      }
+      if(!batch[0].expireDate){
         return res.status(404).json({ message: 'drug is not available' })
       }
       let minDate = new Date(batch[0].expireDate)
@@ -113,6 +125,7 @@ const createVisit = async (req, res) => {
     await patient.save()
     // console.log('drugs:', drugs)
     // console.log('visit:', visit)
+    console.log(visit)
     await visit.save()
     // update the visitData and nextAppointmentData
     return res.status(201).json({ message: 'Visit history created successfully.', visit: visit })

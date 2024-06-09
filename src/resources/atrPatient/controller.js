@@ -43,6 +43,21 @@ const registerPatient = async (req, res) => {
       }
       atrNumber = 'T' + (1 + pCount.userCount).toString()
     }
+    if(!phoneNumber){
+      return res.status(400).json({ error: 'Phone number is required' })
+    }
+
+    if(!weight){
+      return res.status(400).json({ error: 'Weight is required' })
+    }
+    // check if the phone number is valid it is like +251930651099
+    if (!phoneNumber.match(/^\+2519[0-9]{8}$/)) {
+      return res.status(400).json({ error: 'Invalid phone number' })
+    }
+
+    if (!supporterPhone.match(/^\+2519[0-9]{8}$/)) {
+      return res.status(400).json({ error: 'Invalid phone number' })
+    }
     // Create a new user
     const newUser = new Patient({
       fullName,
@@ -141,6 +156,15 @@ const updatePatient = async (req, res) => {
     if (!patient) {
       return res.status(404).json({ error: 'Patient not found' })
     }
+
+    if(phoneNumber && !phoneNumber.match(/^\+2519[0-9]{8}$/)){
+      return res.status(400).json({ error: 'Invalid phone number' })
+    }
+
+    if (!supporterPhone.match(/^\+2519[0-9]{8}$/)) {
+      return res.status(400).json({ error: 'Invalid phone number' })
+    }
+
     if (fullName) patient.fullName = fullName
     if (birthDate) patient.birthDate = birthDate
     if (dateEligible) patient.dateEligible = dateEligible
