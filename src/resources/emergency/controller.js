@@ -24,12 +24,15 @@ const registerEmergencyPatient = async (req, res) => {
     // Find the drug by drugId
     for (let i = 0; i < drugs.length; i++) {
       const drug = await Drug.findById(drugs[i]._id)
+      if(!drug.batch || drug.batch.length == 0){
+        return res.status(404).json({ message: 'drug is not available' })
+      }
       var drugAmount = 0
       for(let j=0;j<drug.batch.length;j++){
         drugAmount += drug.batch[j].quantity
       }
       if(drugAmount < drugs[i].amount){
-        return res.status(404).json({ message: "only"+ drugAmount + "is available" })
+        return res.status(404).json({ message: "only "+ drugAmount + " drugs is available" })
       }
       if (!drug) {
         return res.status(404).json({ message: 'Drug not found.' })
@@ -51,15 +54,20 @@ const registerEmergencyPatient = async (req, res) => {
         return res.status(404).json({ message: 'Drug not found.' })
       }
       // get least expiry date from the bach and update the drug
+      if(!drug.batch || drug.batch.length == 0){
+        return res.status(404).json({ message: 'drug is not available' })
+      }
       const batch = drug.batch
       if (batch.length == 0) {
         return res.status(404).json({ message: 'drug is not available' })
       }
-
+      if(!batch[0].expireDate){
+        return res.status(404).json({ message: 'drug is not available' })
+      }
       let minDate = new Date(batch[0].expireDate)
       for (let j = 1; j < batch.length; j++) {
         const date = new Date(batch[j].expireDate)
-        if (date < minDate) {
+        if (date < minDate && batch[j].quantity > drugs[i].amount) {
           minDate = date
         }
       }
@@ -68,6 +76,9 @@ const registerEmergencyPatient = async (req, res) => {
       drug.batch.forEach((batch) => {
         const batchDate = new Date(batch.expireDate)
         if (batchDate.toString() == minDate.toString()) {
+          if(batch.quantity < drugs[i].amount){
+            return res.status(404).json({ message: 'drug is not available' })
+          }
           newBatch.push({ ...batch, quantity: batch.quantity - drugs[i].amount })
         } else{
           newBatch.push(batch)
