@@ -44,19 +44,19 @@ const registerPatient = async (req, res) => {
       atrNumber = 'T' + (1 + pCount.userCount).toString()
     }
     if(!phoneNumber){
-      return res.status(400).json({ error: 'Phone number is required' })
+      return res.status(400).json({ message: 'Phone number is required' })
     }
 
     if(!weight){
-      return res.status(400).json({ error: 'Weight is required' })
+      return res.status(400).json({ message: 'Weight is required' })
     }
     // check if the phone number is valid it is like +251930651099
     if (!phoneNumber.match(/^\+2519[0-9]{8}$/)) {
-      return res.status(400).json({ error: 'Invalid phone number' })
+      return res.status(400).json({ message: 'Invalid phone number' })
     }
 
     if (!supporterPhone.match(/^\+2519[0-9]{8}$/)) {
-      return res.status(400).json({ error: 'Invalid phone number' })
+      return res.status(400).json({ message: 'Invalid phone number' })
     }
     // Create a new user
     const newUser = new Patient({
@@ -93,7 +93,7 @@ const registerPatient = async (req, res) => {
     res.status(201).json({ message: 'User registered successfully', user: newUser })
   } catch (error) {
     console.error('Error registering user:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 
@@ -106,7 +106,7 @@ const getAllPatients = async (req, res) => {
     res.status(200).json({ patients })
   } catch (error) {
     console.error('Error fetching patients:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 
@@ -123,7 +123,7 @@ const getPatient = async (req, res) => {
     res.status(200).json({ patient })
   } catch (error) {
     console.error('Error fetching patient:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 
@@ -154,15 +154,15 @@ const updatePatient = async (req, res) => {
 
     const patient = await Patient.findOne({ atrNumber })
     if (!patient) {
-      return res.status(404).json({ error: 'Patient not found' })
+      return res.status(404).json({ message: 'Patient not found' })
     }
 
     if(phoneNumber && !phoneNumber.match(/^\+2519[0-9]{8}$/)){
-      return res.status(400).json({ error: 'Invalid phone number' })
+      return res.status(400).json({ message: 'Invalid phone number' })
     }
 
     if (!supporterPhone.match(/^\+2519[0-9]{8}$/)) {
-      return res.status(400).json({ error: 'Invalid phone number' })
+      return res.status(400).json({ message: 'Invalid phone number' })
     }
 
     if (fullName) patient.fullName = fullName
@@ -189,7 +189,7 @@ const updatePatient = async (req, res) => {
     res.status(200).json({ message: 'Patient updated successfully', patient })
   } catch (error) {
     console.error('Error updating patient:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 
