@@ -37,7 +37,6 @@ const createVisit = async (req, res) => {
       if (!drug) {
         return res.status(404).json({ message: 'Drug not found.' })
       }
-      console.log(drug)
       if(!drug.batch || drug.batch.length == 0){
         return res.status(404).json({ message: 'drug is not available' })
       }
@@ -72,7 +71,7 @@ const createVisit = async (req, res) => {
     patient.visitDate = today
     const nextVisitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + parseInt(daysBeforeNextVisit))
     var ontime = true
-    if(patient.visitDate && patient.nextAppointmentDate.toString() != today.toString()){
+    if(patient.visitDate && patient.nextAppointmentDate && patient.nextAppointmentDate.toString() != today.toString()){
       ontime = false
     }
 
