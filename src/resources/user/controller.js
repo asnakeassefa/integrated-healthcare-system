@@ -107,7 +107,7 @@ const getusers = async (req, res) => {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to add order.' })
     }
-    const users = await User.find({ verified: true, rejected: false}).populate('role')
+    const users = await User.find({ verified: true}).populate('role')
     // return all verified users is true
     const usersList = users.map((user) => {
       return {
@@ -171,7 +171,7 @@ const getUnverifiedUsers = async (req, res) => {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
-    const users = await User.find({ verified: false , rejected:false})
+    const users = await User.find({ verified: false, rejected:false})
 
     // send user without password
     res.status(200).json({
