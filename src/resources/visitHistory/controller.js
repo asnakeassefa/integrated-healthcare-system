@@ -69,7 +69,6 @@ const createVisit = async (req, res) => {
       onTime: ontime,
       serviceDelivery: serviceDelivery,
     })
-    console.log(patient.visitDate.toString == today.toString)
     if(patient.visitDate && patient.visitDate.toString() != today.toString()){
       patient.visitDate = visitDate
     }else if(patient.visitDate && patient.visitDate.toString() == today.toString()){
@@ -125,7 +124,7 @@ const createVisit = async (req, res) => {
     await patient.save()
     // console.log('drugs:', drugs)
     // console.log('visit:', visit)
-    console.log(visit)
+    
     await visit.save()
     // update the visitData and nextAppointmentData
     return res.status(201).json({ message: 'Visit history created successfully.', visit: visit })
