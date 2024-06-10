@@ -31,23 +31,45 @@ const createVisit = async (req, res) => {
       return res.status(404).json({ message: 'Drugs not found.' })
     }
     // find sum of the drugs from all the batchs and compare with the amount
+    
     for (let i = 0; i < drugs.length; i++) {
       const drug = await Drug.findById(drugs[i]._id)
+      if (!drug) {
+        return res.status(404).json({ message: 'Drug not found.' })
+      }
+      console.log(drug)
       if(!drug.batch || drug.batch.length == 0){
         return res.status(404).json({ message: 'drug is not available' })
       }
       var drugAmount = 0
       for(let j=0;j<drug.batch.length;j++){
         drugAmount += drug.batch[j].quantity
-      }
-      if(drugAmount < drugs[i].amount){
-        return res.status(404).json({ message: "only"+ drugAmount + "drugs is available" })
-      }
-      if (!drug) {
-        return res.status(404).json({ message: 'Drug not found.' })
+        }
+      if(drugAmount < parseInt(drugs[i].amount, 10)){
+        return res.status(404).json({ message: "only "+ drugAmount + "drugs is available" })
       }
     }
+
+    // check if the visit date is valid
+    if (isNaN(new Date(visitDate).getTime())) {
+      return res.status(400).json({ message: 'Invalid date format' })
+    }
     const today = new Date(visitDate)
+
+    // check if the visit is not in the future
+    if (today > new Date()) {
+      return res.status(404).json({ message: 'Visit date cannot be in the future' })
+    }
+    // check only year, month and day to check if the patient has visited today
+    if(patient.visitDate){
+      var date = new Date(patient.visitDate.getFullYear(), patient.visitDate.getMonth(), patient.visitDate.getDate())
+      var todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+      var editedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+      if(patient.visitDate && editedDate.toString() == todayDate.toString()){
+        return res.status(404).json({ message: 'Patient has already visited today' })
+      }
+    }
+    patient.visitDate = today
     const nextVisitDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + parseInt(daysBeforeNextVisit))
     var ontime = true
     if(patient.visitDate && patient.nextAppointmentDate.toString() != today.toString()){
@@ -69,11 +91,6 @@ const createVisit = async (req, res) => {
       onTime: ontime,
       serviceDelivery: serviceDelivery,
     })
-    if(patient.visitDate && patient.visitDate.toString() != today.toString()){
-      patient.visitDate = visitDate
-    }else if(patient.visitDate && patient.visitDate.toString() == today.toString()){
-      return res.status(404).json({ message: 'Patient already visited' })
-    }
 
     patient.nextAppointmentDate = nextVisitDate
     for (let i = 0; i < drugs.length; i++) {
@@ -121,6 +138,7 @@ const createVisit = async (req, res) => {
       drug.batch = newBatch
       await drug.save()
     }
+    patient.visitDate = visitDate
     await patient.save()
     // console.log('drugs:', drugs)
     // console.log('visit:', visit)

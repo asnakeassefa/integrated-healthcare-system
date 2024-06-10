@@ -46,7 +46,7 @@ const addDrug = async (req, res) => {
 // Controller to get all drugs
 const getAllDrugs = async (req, res) => {
   try {
-    const drugs = await Drug.find()
+    const drugs = await Drug.find({ deleted: false })
     // return message and drugs
     res.json({ message: 'All drugs', drugs: drugs })
   } catch (error) {
@@ -89,10 +89,12 @@ const updateDrug = async (req, res) => {
 const deleteDrug = async (req, res) => {
   const { id } = req.params
   try {
-    const drug = await Drug.findByIdAndDelete(id)
+    const drug = await Drug.findOne({ _id: id })
     if (!drug) {
       return res.status(404).json({ message: 'Drug not found' })
     }
+    drug.deleted = true
+    await drug.save()
     res.json({ message: 'Drug deleted successfully' })
   } catch (error) {
     res.status(500).json({ message: 'Server error' })
@@ -123,7 +125,7 @@ const removeByBatch = async (req, res) => {
 const upcomingExpireDate = async (req, res) => {
   try {
     const { days } = req.params
-    const drugs = await Drug.find()
+    const drugs = await Drug.find({ deleted: false})
     const today = new Date()
     const upcomingExpireDate = drugs.filter((drug) => {
       const batch = drug.batch.find((batch) => {
