@@ -176,7 +176,7 @@ const getUpcomingAppointments = async (req, res) => {
     res.status(200).json({ patients })
   } catch (error) {
     console.error('Error geting patients data:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 
@@ -190,7 +190,7 @@ const getPassedAppointments = async (req, res) => {
     res.status(200).json({ patients })
   } catch (error) {
     console.error('Error geting patients data:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 
