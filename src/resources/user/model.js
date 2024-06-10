@@ -18,6 +18,10 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  rejected:{
+    type: Boolean,
+    default: false,
+  },
   role: {
     type: mongoose.Schema.Types.ObjectId, // corrected 'types' to 'Types'
     ref: 'Role', // corrected 'role' to 'Role'

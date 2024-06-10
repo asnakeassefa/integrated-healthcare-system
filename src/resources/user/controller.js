@@ -107,7 +107,7 @@ const getusers = async (req, res) => {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to add order.' })
     }
-    const users = await User.find({ verified: true }).populate('role')
+    const users = await User.find({ verified: true, rejected: false}).populate('role')
     // return all verified users is true
     const usersList = users.map((user) => {
       return {
@@ -171,7 +171,7 @@ const getUnverifiedUsers = async (req, res) => {
       console.log(req.Role)
       return res.status(403).json({ message: 'You are not authorized to verify user.' })
     }
-    const users = await User.find({ verified: false })
+    const users = await User.find({ verified: false , rejected:false})
 
     // send user without password
     res.status(200).json({
@@ -348,7 +348,7 @@ const rejectUser = async (req, res) => {
     const userRole = await UserRole.findById(req.Role)
     if (userRole.name != 'Admin' && userRole.name != 'SuperAdmin') {
       console.log(req.Role)
-      return res.status(403).json({ message: 'You are not authorized to verify user.' })
+      return res.status(403).json({ message: 'You are not authorized to reject user.' })
     }
     const { userId } = req.body
     if (!userId) {
@@ -359,11 +359,12 @@ const rejectUser = async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
     if (user.verified == true) {
-      return res.status(403).json({ message: 'User already verified' })
+      return res.status(403).json({ message: 'User is already verified' })
     }
 
     // delete user
-    await User.findByIdAndDelete(userId)
+    user.rejected = true
+    await user.save()
     res.json({ message: 'User rejected successfully' })
   } catch (error) {
     console.error('Error fetching users:', error)
