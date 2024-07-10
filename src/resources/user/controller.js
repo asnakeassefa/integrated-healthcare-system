@@ -16,7 +16,7 @@ const addRole = async (req, res, next) => {
     res.status(201).json(newRole)
   } catch (error) {
     console.error('Error adding Role:', error)
-    res.status(500).json({ error: 'Failed to add role' })
+    res.status(500).json({ message: 'Failed to add role' })
   }
 }
 
@@ -26,7 +26,7 @@ const signup = async (req, res, next) => {
 
     // check if user already exists
     if (!username || !name || !password || !roleName) {
-      return res.status(404).json({ error: 'please provide all the required fields' })
+      return res.status(404).json({ message: 'please provide all the required fields' })
     }
 
     if (password.length < 8) {
@@ -35,21 +35,21 @@ const signup = async (req, res, next) => {
 
     const existingUser = await User.findOne({ username: username })
     if (existingUser) {
-      return res.status(409).json({ error: 'User already exists' })
+      return res.status(409).json({ message: 'User already exists' })
     }
     if (roleName == 'SuperAdmin') {
-      return res.status(403).json({ error: 'You are not allowed to create super admin' })
+      return res.status(403).json({ message: 'You are not allowed to create super admin' })
     }
     const role = await UserRole.findOne({ name: roleName })
     if (!role) {
-      return res.status(404).json({ error: 'Role not found' })
+      return res.status(404).json({ message: 'Role not found' })
     }
     // salting and hashing password
     const hashedPassword = await bcrypt.hash(password, 10)
     // console.log(hashedPassword)
     if (hashedPassword == null) {
       // console.error(hashedPassword)
-      return res.status(500).json({ error: 'Failed to hash password' })
+      return res.status(500).json({ message: 'Failed to hash password' })
     }
     const newUser = new User({
       username,
@@ -62,7 +62,7 @@ const signup = async (req, res, next) => {
     res.status(201).json({ message: 'User created successfully' })
   } catch (error) {
     console.error('Error adding User:', error)
-    res.status(500).json({ error: 'Failed to adding user' })
+    res.status(500).json({ message: 'Failed to adding user' })
   }
 }
 
@@ -121,7 +121,7 @@ const getusers = async (req, res) => {
     res.status(200).json({ message: 'All Verified users', users: usersList })
   } catch (error) {
     console.error('Error fetching users:', error)
-    res.status(500).json({ error: 'Failed to fetch users' })
+    res.status(500).json({ message: 'Failed to fetch users' })
   }
 }
 
@@ -187,7 +187,7 @@ const getUnverifiedUsers = async (req, res) => {
     })
   } catch (error) {
     console.error('Error fetching users:', error)
-    res.status(500).json({ error: 'Failed to fetch users' })
+    res.status(500).json({ message: 'Failed to fetch users' })
   }
 }
 
@@ -241,7 +241,7 @@ const updateProfile = async (req, res) => {
     res.json({ message: 'User profile updated successfully' })
   } catch (error) {
     console.error('Error resetting password:', error)
-    res.status(500).json({ error: 'Failed to Update profile' })
+    res.status(500).json({ message: 'Failed to Update profile' })
   }
 }
 
@@ -280,7 +280,7 @@ const updateUserInfo = async (req, res) => {
     res.json({ message: 'User updated successfully' })
   } catch (error) {
     console.error('Error updating user:', error)
-    res.status(500).json({ error: 'Failed to update user' })
+    res.status(500).json({ message: 'Failed to update user' })
   }
 }
 
@@ -309,7 +309,7 @@ const unverifiedUsers = async (req, res) => {
     res.json({ message: 'User unverified successfully' })
   } catch (error) {
     console.error('Error fetching users:', error)
-    res.status(500).json({ error: 'Failed to fetch users' })
+    res.status(500).json({ message: 'Failed to fetch users' })
   }
 }
 
@@ -337,7 +337,7 @@ const resetPassword = async (req, res) => {
     res.json({ message: 'Password reseted successfully' })
   } catch (error) {
     console.error('Error resetting password:', error)
-    res.status(500).json({ error: 'Failed to reset password' })
+    res.status(500).json({ message: 'Failed to reset password' })
   }
 }
 
@@ -368,7 +368,7 @@ const rejectUser = async (req, res) => {
     res.json({ message: 'User rejected successfully' })
   } catch (error) {
     console.error('Error fetching users:', error)
-    res.status(500).json({ error: 'Failed to fetch users' })
+    res.status(500).json({ message: 'Failed to fetch users' })
   }
 }
 

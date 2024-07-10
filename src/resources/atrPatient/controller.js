@@ -32,7 +32,7 @@ const registerPatient = async (req, res) => {
     // Check if the user already exists
     const existingUser = await Patient.findOne({ atrNumber })
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' })
+      return res.status(400).json({ message: 'User already exists' })
     }
 
     if (!atrNumber) {
@@ -118,7 +118,7 @@ const getPatient = async (req, res) => {
     const patient = await Patient.findOne({ atrNumber: atrId })
     // If patient not found
     if (!patient) {
-      return res.status(404).json({ error: 'Patient not found' })
+      return res.status(404).json({ message: 'Patient not found' })
     }
     res.status(200).json({ patient })
   } catch (error) {

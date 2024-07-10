@@ -34,7 +34,7 @@ const getVisits = async (req, res) => {
     return res.status(200).json({ visits })
   } catch (error) {
     console.error('Error fetching visits:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 
@@ -54,7 +54,7 @@ const getPatientVisit = async (req, res) => {
     return res.status(200).json({ patient })
   } catch (error) {
     console.error('Error fetching patients:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 // get all user who passed there appointment date
@@ -67,7 +67,7 @@ const getPassedAppointment = async (req, res) => {
     return res.status(200).json({ users })
   } catch (error) {
     console.error('Error fetching users:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ message: 'Internal server error' })
   }
 }
 // get all patient visit
